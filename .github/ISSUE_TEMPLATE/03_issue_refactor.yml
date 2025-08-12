@@ -1,12 +1,12 @@
-name: "✨ Feature"
-description: "새로운 기능 추가"
-labels: ["feature"]
+name: "♻️ Refactor"
+description: "코드 리팩터링 (기능 변화 없음)"
+labels: ["refactor"]
 body:
   - type: textarea
     attributes:
       label: 📄 설명
       description: 설명을 작성해 주세요.
-      placeholder: 예시) 소셜로그인 기능 개발
+      placeholder: 예시) 회원 서비스 로직 구조 개선
     validations:
       required: true
   - type: textarea

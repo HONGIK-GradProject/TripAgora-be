@@ -1,12 +1,12 @@
-name: "✨ Feature"
-description: "새로운 기능 추가"
-labels: ["feature"]
+name: "🛠️ Build"
+description: "CICD 및 인프라, 빌드 관련 작업"
+labels: ["build"]
 body:
   - type: textarea
     attributes:
       label: 📄 설명
       description: 설명을 작성해 주세요.
-      placeholder: 예시) 소셜로그인 기능 개발
+      placeholder: 예시) Dockerfile 및 nginx 설정 추가
     validations:
       required: true
   - type: textarea

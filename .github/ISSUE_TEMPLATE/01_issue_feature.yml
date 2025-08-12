@@ -18,10 +18,3 @@ body:
         - [ ] Task2
     validations:
       required: true
-  - type: textarea
-    attributes:
-      label: 🌳 브랜치명
-      description: 브랜치명을 작성해주세요(feature/#이슈번호-기능명)
-      placeholder: 예시) feature/#123-social-login
-    validations:
-      required: true

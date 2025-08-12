@@ -1,0 +1,27 @@
+name: "✨ Feature"
+description: "새로운 기능 추가"
+labels: ["feature"]
+body:
+  - type: textarea
+    attributes:
+      label: 📄 설명
+      description: 새로운 기능에 대한 설명을 작성해 주세요.
+      placeholder: 예시) 소셜로그인 기능 개발
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✅ 작업할 내용
+      description: 할 일을 작성해주세요.
+      value: |
+        - [ ] Task1
+        - [ ] Task2
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 🌳 브랜치명
+      description: 브랜치명을 작성해주세요(feature/#이슈번호-기능명)
+      placeholder: 예시) feature/#123-social-login
+    validations:
+      required: true

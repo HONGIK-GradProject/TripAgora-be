@@ -1,0 +1,70 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+        # 1. 소스 체크아웃
+      - name: Checkout source
+        # github 파일 불러오는 라이브러리
+        uses: actions/checkout@v4
+
+        # 2. JDK 설치
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+        # 3. application-main.yml 생성 (Secrets에서 가져옴)
+      - name: Create application-main.yml from Secrets
+        run: |
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION_MAIN_YML }}" > ./src/main/resources/application-main.yml
+
+        # 4. 테스트 및 빌드 (GitHub Actions 서버에서)
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+        # 5. 빌드 결과 JAR 파일명 통일
+      - name: Rename JAR
+        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
+          
+        # 6. SCP로 EC2 전송 (tobe 폴더에)
+      - name: Upload to EC2 via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          # SSH를 기반으로 파일을 전송하므로 아래 정보 필요
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: project.jar
+          target: /home/ec2-user/tripagora/tobe
+
+        # 7 SSH로 EC2에 접속하기
+      - name: Deploy on EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          # 현재 실행 중인 서버에 대한 코드들은 current 폴더에 저장
+          # 새로운 폴더(tobe)를 current 폴더로 옮김
+          # 새롭게 전달받은 jar 파일 실행시킴
+          # 필요없어진 tobe 폴더 삭제
+          script: |
+            rm -rf /home/ubuntu/tripagora/current
+            mkdir /home/ubuntu/tripagora/current
+            mv /home/ubuntu/tripagora/tobe/project.jar /home/ubuntu/tripagora/current/project.jar
+            cd /home/ubuntu/tripagora/current
+            pgrep -f 'project.jar' | xargs -r kill -9 || true
+            nohup java -jar project.jar > ./output.log 2>&1 &
+            rm -rf /home/ubuntu/tripagora/tobe
+#           sudo fuser -k -n tcp 8080 || true
+#           nohup java -jar project.jar --spring.profiles.active=main > ./output.log 2>&1 &

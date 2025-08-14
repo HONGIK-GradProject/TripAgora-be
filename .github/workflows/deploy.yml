@@ -62,11 +62,6 @@ jobs:
           # 새롭게 전달받은 jar 파일 실행시킴
           # 필요없어진 tobe 폴더 삭제
           script: |
-            export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
-            export DATABASE_PORT=${{ secrets.DATABASE_PORT }}
-            export DATABASE_NAME=${{ secrets.DATABASE_NAME }}
-            export DATABASE_USER=${{ secrets.DATABASE_USER }}
-            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
             rm -rf /home/ec2-user/tripagora/current
             mkdir /home/ec2-user/tripagora/current
             mv /home/ec2-user/tripagora/tobe/project.jar /home/ec2-user/tripagora/current/project.jar

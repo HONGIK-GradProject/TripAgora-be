@@ -28,6 +28,9 @@ jobs:
           echo "${{ secrets.APPLICATION_MAIN_YML }}" > ./src/main/resources/application-main.yml
 
         # 4. 테스트 및 빌드 (GitHub Actions 서버에서)
+      - name: Make Gradle Wrapper executable
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         run: ./gradlew clean build
 

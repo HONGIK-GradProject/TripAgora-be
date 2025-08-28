@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     private SocialProvider socialProvider;
 
     // 닉네임 (NOT NULL)
-    @Column(name = "nickname", nullable = false, unique = true)
+    @Column(name = "nickname", unique = true)
     private String nickname;
 
     // 프로필 이미지 URL (VARCHAR(2083), NOT NULL)

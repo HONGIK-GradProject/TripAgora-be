@@ -1,11 +1,15 @@
 package com.example.TripAgora.user.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
+import com.example.TripAgora.tag.entity.UserTag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,26 +20,24 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 소셜로그인 id (NOT NULL)
     @Column(name = "social_id", nullable = false)
     private String socialId;
 
-    // 소셜로그인 제공자 (ENUM in DB, enum으로 매핑)
     @Enumerated(EnumType.STRING)
     @Column(name = "social_provider", nullable = false)
     private SocialProvider socialProvider;
 
-    // 닉네임 (NOT NULL)
     @Column(name = "nickname", unique = true)
     private String nickname;
 
-    // 프로필 이미지 URL (VARCHAR(2083), NOT NULL)
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    // 현재 가이드 역할 여부 (BOOLEAN NOT NULL DEFAULT FALSE)
     @Column(name = "is_guide", nullable = false)
     private boolean isGuide = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTag> userTags = new ArrayList<>();
 
     @Builder
     private User(String socialId, SocialProvider socialProvider, String nickname, String imageUrl, boolean isGuide) {
@@ -47,6 +49,6 @@ public class User extends BaseEntity {
     }
 
     public enum SocialProvider {
-        KAKAO, NAVER, GOOGLE // 필요에 맞게 확장
+        KAKAO, NAVER, GOOGLE
     }
 }

@@ -16,7 +16,7 @@ public class JWTUtil {
     private final String secretKey;
     private final int accessTokenExpiration;
     private final int refreshTokenExpiration;
-    private SecretKey SECRET_KEY;
+    private final SecretKey SECRET_KEY;
 
     public JWTUtil(
             @Value("${jwt.secretKey}") String secretKey,

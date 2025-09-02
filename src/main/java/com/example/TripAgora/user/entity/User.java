@@ -14,9 +14,14 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
+@Table(name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_user_social", columnNames = {"social_id", "social_type"})
+        }
+)
+
 public class User extends BaseEntity {
-    @Id @Column(name = "user_id")
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -24,11 +29,15 @@ public class User extends BaseEntity {
     private String socialId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "social_provider", nullable = false)
-    private SocialProvider socialProvider;
+    @Column(name = "social_type", nullable = false)
+    private SocialType socialType;
 
     @Column(name = "nickname", unique = true)
     private String nickname;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
@@ -40,15 +49,14 @@ public class User extends BaseEntity {
     private List<UserTag> userTags = new ArrayList<>();
 
     @Builder
-    private User(String socialId, SocialProvider socialProvider, String nickname, String imageUrl, boolean isGuide) {
+    private User(String socialId, SocialType socialType, String imageUrl) {
         this.socialId = socialId;
-        this.socialProvider = socialProvider;
-        this.nickname = nickname;
+        this.socialType = socialType;
         this.imageUrl = imageUrl;
-        this.isGuide = isGuide;
+        this.role = Role.USER;
     }
 
-    public enum SocialProvider {
-        KAKAO, NAVER, GOOGLE
+    public enum Role {
+        USER, ADMIN
     }
 }

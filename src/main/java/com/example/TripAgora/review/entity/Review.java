@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "review")
 public class Review extends BaseEntity {
     @Id
-    @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 }

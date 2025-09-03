@@ -1,6 +1,5 @@
 package com.example.TripAgora.tag.entity;
 
-import com.example.TripAgora.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tag")
 public class Tag {
-    @Id @Column(name = "tag_id")
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

@@ -7,14 +7,14 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/tripagora_db?useSSL=false&allowPublicKeyRetrieval=true
     username: "root"
-    password: "0311"
+    password: "1234"
 
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show_sql: true
 
 jwt:

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
-
     private final int code;
     private final String message;
 

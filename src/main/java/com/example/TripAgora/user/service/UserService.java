@@ -10,6 +10,7 @@ import com.example.TripAgora.user.dto.NicknameResponse;
 import com.example.TripAgora.user.dto.TagResponse;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.DuplicateNicknameException;
+import com.example.TripAgora.user.exception.InvalidNicknameFormatException;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,10 @@ public class UserService {
 
     @Transactional
     public NicknameResponse updateNickname(long userId, String nickname) {
+        if (nickname.matches(".*[\\s\\p{Cntrl}].*")) {
+            throw new InvalidNicknameFormatException();
+        }
+
         if (userRepository.existsByNickname(nickname)) {
             throw new DuplicateNicknameException();
         }

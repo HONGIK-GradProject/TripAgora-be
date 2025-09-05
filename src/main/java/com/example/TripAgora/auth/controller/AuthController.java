@@ -22,19 +22,20 @@ public class AuthController {
     private final JWTService jwtService;
 
     @PostMapping("/login/{socialType}")
-    public ApiResponse<SocialLoginResponse> socialLogin(@PathVariable SocialType socialType, @Valid @RequestBody SocialLoginRequest socialLoginRequest) {
+    public ApiResponse<SocialLoginResponse> socialLogin(@PathVariable final SocialType socialType,
+                                                        @Valid @RequestBody final SocialLoginRequest socialLoginRequest) {
         SocialLoginResponse SocialLoginResponse = loginService.socialLogin(socialLoginRequest, socialType);
         return ApiResponse.success(SuccessCode.OK, SocialLoginResponse);
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@AuthenticationPrincipal long userId) {
+    public ApiResponse<Void> logout(@AuthenticationPrincipal final long userId) {
         loginService.logout(userId);
         return ApiResponse.success(SuccessCode.NO_CONTENT);
     }
 
     @PostMapping("/reissue")
-    public ApiResponse<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest reissueRequest) {
+    public ApiResponse<ReissueResponse> reissue(@Valid @RequestBody final ReissueRequest reissueRequest) {
         ReissueResponse reissueResponse = jwtService.reissue(reissueRequest);
         return ApiResponse.success(SuccessCode.CREATED, reissueResponse);
     }

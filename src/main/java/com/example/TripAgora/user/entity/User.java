@@ -1,6 +1,7 @@
 package com.example.TripAgora.user.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
+import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.tag.entity.UserTag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -42,25 +43,29 @@ public class User extends BaseEntity {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column(name = "is_guide", nullable = false)
-    private boolean isGuide = false;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTag> userTags = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private GuideProfile guideProfile;
 
     @Builder
     private User(String socialId, SocialType socialType, String imageUrl) {
         this.socialId = socialId;
         this.socialType = socialType;
         this.imageUrl = imageUrl;
-        this.role = Role.USER;
+        this.role = Role.TRAVELER;
     }
 
     public enum Role {
-        USER, ADMIN
+        TRAVELER, GUIDE, ADMIN
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

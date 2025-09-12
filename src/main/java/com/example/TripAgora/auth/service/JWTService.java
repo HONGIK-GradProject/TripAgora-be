@@ -31,12 +31,21 @@ public class JWTService {
         }
 
         long userId = jwtUtil.getUserId(refreshToken);
-        String role = jwtUtil.getRole(refreshToken);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        return issueTokens(user);
+    }
+
+    public ReissueResponse issueTokensForUser(User user) {
+        return issueTokens(user);
+    }
+
+    private ReissueResponse issueTokens(User user) {
+        String role = user.getRole().name();
+        long userId = user.getId();
 
         String newAccessToken = jwtUtil.createToken(userId, role, true);
         String newRefreshToken = jwtUtil.createToken(userId, role, false);
-
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         deleteRefreshTokenByUserId(userId);
         saveRefreshToken(user, newRefreshToken);

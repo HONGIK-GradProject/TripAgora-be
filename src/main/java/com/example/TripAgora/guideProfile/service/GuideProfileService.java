@@ -1,5 +1,7 @@
 package com.example.TripAgora.guideProfile.service;
 
+import com.example.TripAgora.auth.dto.ReissueResponse;
+import com.example.TripAgora.auth.service.JWTService;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.AlreadyGuideException;
 import com.example.TripAgora.guideProfile.exception.AlreadyTravelerException;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class GuideProfileService {
+    private final JWTService jwtService;
     private final UserRepository userRepository;
     private final GuideProfileRepository guideProfileRepository;
 
@@ -38,7 +41,10 @@ public class GuideProfileService {
         }
 
         user.updateRole(User.Role.GUIDE);
-        return new GuideSwitchResponse(profile.getId()); // TODO: 가이드용 홈화면 확정 후 수정
+
+        ReissueResponse tokenResponse = jwtService.issueTokensForUser(user);
+        return new GuideSwitchResponse(tokenResponse.accessToken(), tokenResponse.refreshToken(), profile.getId());
+        // TODO: 가이드용 홈화면 확정 후 수정
     }
 
     @Transactional
@@ -50,6 +56,8 @@ public class GuideProfileService {
         }
 
         user.updateRole(User.Role.TRAVELER);
-        return new TravelerSwitchResponse(user.getId()); // TODO: 여행객용 홈화면 확정 후 수정
+        ReissueResponse tokenResponse = jwtService.issueTokensForUser(user);
+        return new TravelerSwitchResponse(tokenResponse.accessToken(), tokenResponse.refreshToken(), user.getId());
+        // TODO: 여행객용 홈화면 확정 후 수정
     }
 }

@@ -56,7 +56,25 @@ public class Template extends BaseEntity {
     @Builder
     private Template(GuideProfile guideProfile, String title, String content) {
         this.guideProfile = guideProfile;
+        this.title = "";
+        this.content = "";
+    }
+
+    public void updateInfo(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void clearImages() {
+        this.templateImages.clear();
+    }
+
+    public void addImage(String imageUrl) {
+        TemplateImage templateImage = TemplateImage.builder()
+                .template(this)
+                .imageUrl(imageUrl)
+                .displayOrder(this.templateImages.size() + 1)
+                .build();
+        this.templateImages.add(templateImage);
     }
 }

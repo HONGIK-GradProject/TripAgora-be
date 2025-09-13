@@ -1,9 +1,12 @@
 package com.example.TripAgora.template.service;
 
+import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
 import com.example.TripAgora.template.dto.TemplateCreateResponse;
+import com.example.TripAgora.template.dto.TemplateUpdateRequest;
 import com.example.TripAgora.template.entity.Template;
+import com.example.TripAgora.template.exception.TemplateNotFoundException;
 import com.example.TripAgora.template.repository.TemplateRepository;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
@@ -19,7 +22,7 @@ public class TemplateService {
     private final UserRepository userRepository;
 
     @Transactional
-    public TemplateCreateResponse createDraftTemplate(Long userId) {
+    public TemplateCreateResponse createDraftTemplate(long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         GuideProfile guideProfile = user.getGuideProfile();
 
@@ -33,5 +36,21 @@ public class TemplateService {
 
         Template savedTemplate = templateRepository.save(draftTemplate);
         return new TemplateCreateResponse(savedTemplate.getId());
+    }
+
+    @Transactional
+    public void updateTemplate(long userId, long templateId, TemplateUpdateRequest request) {
+        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+
+        if (!template.getGuideProfile().getUser().getId().equals(userId)) {
+            throw new AccessDeniedException();
+        }
+
+        template.updateInfo(request.title(), request.content());
+
+        template.clearImages();
+        if (request.imageUrls() != null) {
+            request.imageUrls().forEach(template::addImage);
+        }
     }
 }

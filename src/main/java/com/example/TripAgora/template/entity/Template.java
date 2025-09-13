@@ -56,7 +56,7 @@ public class Template extends BaseEntity {
     @Builder
     private Template(GuideProfile guideProfile, String title, String content) {
         this.guideProfile = guideProfile;
-        this.title = title;
-        this.content = content;
+        this.title = "";
+        this.content = "";
     }
 }

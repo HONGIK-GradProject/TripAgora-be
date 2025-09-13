@@ -28,7 +28,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login/**", "/api/auth/reissue").permitAll()
-                        .requestMatchers("/api/guides/**").hasRole("GUIDE")
+                        .requestMatchers("/api/guides/**", "api/templates/**").hasRole("GUIDE")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -26,7 +26,7 @@ public class TemplateItinerary extends BaseEntity {
     private Integer day;
 
     @Column(name = "title", nullable = false)
-    private String title; //
+    private String title;
 
     @Column(columnDefinition = "TEXT")
     private String content;

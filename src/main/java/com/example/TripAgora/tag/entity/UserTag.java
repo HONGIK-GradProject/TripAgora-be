@@ -3,6 +3,7 @@ package com.example.TripAgora.tag.entity;
 import com.example.TripAgora.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,13 +25,10 @@ public class UserTag {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
+    @Builder
     private UserTag(User user, Tag tag) {
         this.user = user;
         this.tag = tag;
         this.id = new UserTagId(user.getId(), tag.getId());
-    }
-
-    public static UserTag of(User user, Tag tag) {
-        return new UserTag(user, tag);
     }
 }

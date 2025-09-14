@@ -6,8 +6,10 @@ import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
 import com.example.TripAgora.tag.exception.MinimumTagsRequiredException;
 import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.UserTagRepository;
-import com.example.TripAgora.user.dto.NicknameResponse;
-import com.example.TripAgora.user.dto.TagResponse;
+import com.example.TripAgora.user.dto.NicknameUpdateRequest;
+import com.example.TripAgora.user.dto.NicknameUpdateResponse;
+import com.example.TripAgora.user.dto.TagUpdateRequest;
+import com.example.TripAgora.user.dto.TagUpdateResponse;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.DuplicateNicknameException;
 import com.example.TripAgora.user.exception.InvalidNicknameFormatException;
@@ -28,7 +30,9 @@ public class UserService {
     private final UserTagRepository userTagRepository;
 
     @Transactional
-    public NicknameResponse updateNickname(long userId, String nickname) {
+    public NicknameUpdateResponse updateNickname(long userId, NicknameUpdateRequest request) {
+        String nickname = request.nickname();
+
         if (nickname.matches(".*[\\s\\p{Cntrl}].*")) {
             throw new InvalidNicknameFormatException();
         }
@@ -40,11 +44,13 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         user.updateNickname(nickname);
 
-        return new NicknameResponse(user.getNickname());
+        return new NicknameUpdateResponse(user.getNickname());
     }
 
     @Transactional
-    public TagResponse updateTags(long userId, List<Long> tagIds) {
+    public TagUpdateResponse updateTags(long userId, TagUpdateRequest request) {
+        List<Long> tagIds = request.tagIds();
+
         if (tagIds == null || tagIds.size() < 3) {
             throw new MinimumTagsRequiredException();
         }
@@ -55,15 +61,20 @@ public class UserService {
         }
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        userTagRepository.deleteByUser(user);
 
-        List<UserTag> newUserTags = newTags.stream().map(tag -> UserTag.of(user, tag)).toList();
+        userTagRepository.deleteByUser(user);
+        List<UserTag> newUserTags = newTags.stream()
+                .map(tag -> UserTag.builder()
+                        .user(user)
+                        .tag(tag)
+                        .build())
+                .toList();
         userTagRepository.saveAll(newUserTags);
 
         List<String> tagNames = newTags.stream()
                 .map(Tag::getName)
                 .collect(Collectors.toList());
 
-        return new TagResponse(tagNames);
+        return new TagUpdateResponse(tagNames);
     }
 }

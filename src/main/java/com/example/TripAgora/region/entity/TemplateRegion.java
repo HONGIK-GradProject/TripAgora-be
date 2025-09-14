@@ -3,6 +3,7 @@ package com.example.TripAgora.region.entity;
 import com.example.TripAgora.template.entity.Template;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,13 +25,10 @@ public class TemplateRegion {
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
+    @Builder
     private TemplateRegion(Template template, Region region) {
         this.template = template;
         this.region = region;
         this.id = new TemplateRegionId(template.getId(), region.getId());
-    }
-
-    public static TemplateRegion of(Template template, Region region) {
-        return new TemplateRegion(template, region);
     }
 }

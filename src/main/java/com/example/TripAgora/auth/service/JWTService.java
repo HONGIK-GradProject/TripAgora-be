@@ -11,9 +11,11 @@ import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JWTService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -62,6 +64,7 @@ public class JWTService {
         refreshTokenRepository.save(refreshEntity);
     }
 
+    @Transactional(readOnly = true)
     public Boolean existsRefreshToken(String token) {
         return refreshTokenRepository.existsByToken(token);
     }

@@ -18,26 +18,28 @@ public class UserController {
     private final GuideProfileService guideProfileService;
 
     @PatchMapping("/me/nickname")
-    public ApiResponse<NicknameResponse> updateNickname(@AuthenticationPrincipal final long userId,
-                                                        @RequestBody @Valid final NicknameRequest nicknameRequest) {
-        return ApiResponse.success(SuccessCode.OK, userService.updateNickname(userId, nicknameRequest.nickname()));
+    public ApiResponse<NicknameUpdateResponse> updateNickname(@AuthenticationPrincipal final long userId,
+                                                              @RequestBody @Valid final NicknameUpdateRequest request) {
+        NicknameUpdateResponse response = userService.updateNickname(userId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @PatchMapping("/me/tags")
-    public ApiResponse<TagResponse> updateTags(@AuthenticationPrincipal final long userId,
-                                                 @RequestBody @Valid final TagRequest tagRequest) {
-        return ApiResponse.success(SuccessCode.OK, userService.updateTags(userId, tagRequest.tagIds()));
+    public ApiResponse<TagUpdateResponse> updateTags(@AuthenticationPrincipal final long userId,
+                                                     @RequestBody @Valid final TagUpdateRequest request) {
+        TagUpdateResponse response = userService.updateTags(userId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @PostMapping("/me/switch-to-guide")
     public ApiResponse<GuideSwitchResponse> switchToGuide(@AuthenticationPrincipal final long userId) {
-        return ApiResponse.success(SuccessCode.OK, guideProfileService.switchToGuide(userId)
-        );
+        GuideSwitchResponse response = guideProfileService.switchToGuide(userId);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @PostMapping("/me/switch-to-traveler")
     public ApiResponse<TravelerSwitchResponse> switchToTraveler(@AuthenticationPrincipal final long userId) {
-        return ApiResponse.success(SuccessCode.OK, guideProfileService.switchToTraveler(userId)
-        );
+        TravelerSwitchResponse response = guideProfileService.switchToTraveler(userId);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 }

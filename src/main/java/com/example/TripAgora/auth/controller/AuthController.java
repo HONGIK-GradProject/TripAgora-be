@@ -23,9 +23,9 @@ public class AuthController {
 
     @PostMapping("/login/{socialType}")
     public ApiResponse<SocialLoginResponse> socialLogin(@PathVariable final SocialType socialType,
-                                                        @Valid @RequestBody final SocialLoginRequest socialLoginRequest) {
-        SocialLoginResponse SocialLoginResponse = loginService.socialLogin(socialLoginRequest, socialType);
-        return ApiResponse.success(SuccessCode.OK, SocialLoginResponse);
+                                                        @RequestBody @Valid final SocialLoginRequest request) {
+        SocialLoginResponse response = loginService.socialLogin(request, socialType);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @PostMapping("/logout")
@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ApiResponse<ReissueResponse> reissue(@Valid @RequestBody final ReissueRequest reissueRequest) {
-        ReissueResponse reissueResponse = jwtService.reissue(reissueRequest);
-        return ApiResponse.success(SuccessCode.CREATED, reissueResponse);
+    public ApiResponse<ReissueResponse> reissue(@RequestBody @Valid final ReissueRequest request) {
+        ReissueResponse response = jwtService.reissue(request);
+        return ApiResponse.success(SuccessCode.CREATED, response);
     }
 }

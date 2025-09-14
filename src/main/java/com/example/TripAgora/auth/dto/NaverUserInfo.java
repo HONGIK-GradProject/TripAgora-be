@@ -9,7 +9,9 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NaverUserInfo {
     private String resultcode;
+
     private String message;
+
     private Response response;
 
     @Getter @Setter

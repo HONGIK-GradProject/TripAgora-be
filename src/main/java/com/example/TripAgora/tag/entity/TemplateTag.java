@@ -3,6 +3,7 @@ package com.example.TripAgora.tag.entity;
 import com.example.TripAgora.template.entity.Template;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,13 +25,10 @@ public class TemplateTag {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
+    @Builder
     private TemplateTag(Template template, Tag tag) {
         this.template = template;
         this.tag = tag;
         this.id = new TemplateTagId(template.getId(), tag.getId());
-    }
-
-    public static TemplateTag of(Template template, Tag tag) {
-        return new TemplateTag(template, tag);
     }
 }

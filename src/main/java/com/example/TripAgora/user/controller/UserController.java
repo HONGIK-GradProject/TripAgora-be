@@ -25,9 +25,9 @@ public class UserController {
     }
 
     @PatchMapping("/me/tags")
-    public ApiResponse<TagUpdateResponse> updateTags(@AuthenticationPrincipal final long userId,
-                                                     @RequestBody @Valid final TagUpdateRequest request) {
-        TagUpdateResponse response = userService.updateTags(userId, request);
+    public ApiResponse<UserTagUpdateResponse> updateTags(@AuthenticationPrincipal final long userId,
+                                                         @RequestBody @Valid final UserTagUpdateRequest request) {
+        UserTagUpdateResponse response = userService.updateTags(userId, request);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

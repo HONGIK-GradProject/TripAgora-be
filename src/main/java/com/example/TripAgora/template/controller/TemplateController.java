@@ -3,6 +3,8 @@ package com.example.TripAgora.template.controller;
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.template.dto.TemplateCreateResponse;
+import com.example.TripAgora.template.dto.TemplateTagUpdateRequest;
+import com.example.TripAgora.template.dto.TemplateTagUpdateResponse;
 import com.example.TripAgora.template.dto.TemplateUpdateRequest;
 import com.example.TripAgora.template.service.TemplateService;
 import jakarta.validation.Valid;
@@ -28,5 +30,13 @@ public class TemplateController {
                                             @RequestBody @Valid final TemplateUpdateRequest request) {
         templateService.updateTemplate(userId, templateId, request);
         return ApiResponse.success(SuccessCode.OK);
+    }
+
+    @PatchMapping("/{templateId}/tags")
+    public ApiResponse<TemplateTagUpdateResponse> updateTags(@AuthenticationPrincipal final long userId,
+                                                             @PathVariable final long templateId,
+                                                             @RequestBody @Valid final TemplateTagUpdateRequest request) {
+        TemplateTagUpdateResponse response = templateService.updateTags(userId, templateId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 }

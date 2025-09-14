@@ -8,8 +8,8 @@ import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.UserTagRepository;
 import com.example.TripAgora.user.dto.NicknameUpdateRequest;
 import com.example.TripAgora.user.dto.NicknameUpdateResponse;
-import com.example.TripAgora.user.dto.TagUpdateRequest;
-import com.example.TripAgora.user.dto.TagUpdateResponse;
+import com.example.TripAgora.user.dto.UserTagUpdateRequest;
+import com.example.TripAgora.user.dto.UserTagUpdateResponse;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.DuplicateNicknameException;
 import com.example.TripAgora.user.exception.InvalidNicknameFormatException;
@@ -48,7 +48,7 @@ public class UserService {
     }
 
     @Transactional
-    public TagUpdateResponse updateTags(long userId, TagUpdateRequest request) {
+    public UserTagUpdateResponse updateTags(long userId, UserTagUpdateRequest request) {
         List<Long> tagIds = request.tagIds();
 
         if (tagIds == null || tagIds.size() < 3) {
@@ -75,6 +75,6 @@ public class UserService {
                 .map(Tag::getName)
                 .collect(Collectors.toList());
 
-        return new TagUpdateResponse(tagNames);
+        return new UserTagUpdateResponse(tagNames);
     }
 }

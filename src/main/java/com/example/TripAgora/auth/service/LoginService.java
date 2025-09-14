@@ -3,7 +3,6 @@ package com.example.TripAgora.auth.service;
 import com.example.TripAgora.auth.dto.*;
 import com.example.TripAgora.auth.exception.SocialAccessTokenInvalidException;
 import com.example.TripAgora.auth.exception.SocialJsonParseErrorException;
-import com.example.TripAgora.auth.repository.RefreshTokenRepository;
 import com.example.TripAgora.auth.util.JWTUtil;
 import com.example.TripAgora.user.entity.SocialType;
 import com.example.TripAgora.user.entity.User;
@@ -11,7 +10,10 @@ import com.example.TripAgora.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -31,8 +33,8 @@ public class LoginService {
 
     private final String KAKAO_USERINFO_URL = "https://kapi.kakao.com/v2/user/me";
     private final String NAVER_USERINFO_URL = "https://openapi.naver.com/v1/nid/me";
-    private final RefreshTokenRepository refreshTokenRepository;
 
+    @Transactional
     public SocialLoginResponse socialLogin(SocialLoginRequest request, SocialType socialType) {
         String userInfoJson = fetchUserInfo(request.socialAccessToken(), socialType);
         SocialUserInfo userInfo = parseUserInfo(userInfoJson, socialType);
@@ -111,8 +113,7 @@ public class LoginService {
         }
     }
 
-    @Transactional
     public void logout(Long userId) {
-        refreshTokenRepository.deleteByUserId(userId);
+        jwtService.deleteRefreshTokenByUserId(userId);
     }
 }

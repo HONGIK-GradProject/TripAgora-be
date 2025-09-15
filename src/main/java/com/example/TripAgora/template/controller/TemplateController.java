@@ -2,10 +2,12 @@ package com.example.TripAgora.template.controller;
 
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
-import com.example.TripAgora.template.dto.TemplateCreateResponse;
-import com.example.TripAgora.template.dto.TemplateTagUpdateRequest;
-import com.example.TripAgora.template.dto.TemplateTagUpdateResponse;
-import com.example.TripAgora.template.dto.TemplateUpdateRequest;
+import com.example.TripAgora.template.dto.request.TemplateRegionUpdateRequest;
+import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
+import com.example.TripAgora.template.dto.request.TemplateTagUpdateRequest;
+import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
+import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
+import com.example.TripAgora.template.dto.request.TemplateUpdateRequest;
 import com.example.TripAgora.template.service.TemplateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,14 @@ public class TemplateController {
                                                              @PathVariable final long templateId,
                                                              @RequestBody @Valid final TemplateTagUpdateRequest request) {
         TemplateTagUpdateResponse response = templateService.updateTags(userId, templateId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @PatchMapping("/{templateId}/regions")
+    public ApiResponse<TemplateRegionUpdateResponse> updateRegions(@AuthenticationPrincipal final long userId,
+                                                                   @PathVariable final long templateId,
+                                                                   @RequestBody @Valid final TemplateRegionUpdateRequest request) {
+        TemplateRegionUpdateResponse response = templateService.updateRegions(userId, templateId, request);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 }

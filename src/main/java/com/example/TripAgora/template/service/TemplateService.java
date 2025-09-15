@@ -3,16 +3,23 @@ package com.example.TripAgora.template.service;
 import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
+import com.example.TripAgora.region.entity.Region;
+import com.example.TripAgora.region.entity.TemplateRegion;
+import com.example.TripAgora.region.exception.InvalidRegionSelectionException;
+import com.example.TripAgora.region.repository.RegionRepository;
+import com.example.TripAgora.region.repository.TemplateRegionRepository;
 import com.example.TripAgora.tag.entity.Tag;
 import com.example.TripAgora.tag.entity.TemplateTag;
 import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
 import com.example.TripAgora.tag.exception.MaximumTagsExceededException;
 import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.TemplateTagRepository;
-import com.example.TripAgora.template.dto.TemplateCreateResponse;
-import com.example.TripAgora.template.dto.TemplateTagUpdateRequest;
-import com.example.TripAgora.template.dto.TemplateTagUpdateResponse;
-import com.example.TripAgora.template.dto.TemplateUpdateRequest;
+import com.example.TripAgora.template.dto.request.TemplateRegionUpdateRequest;
+import com.example.TripAgora.template.dto.request.TemplateTagUpdateRequest;
+import com.example.TripAgora.template.dto.request.TemplateUpdateRequest;
+import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
+import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
+import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.exception.TemplateNotFoundException;
 import com.example.TripAgora.template.repository.TemplateRepository;
@@ -32,7 +39,9 @@ public class TemplateService {
     private final TemplateRepository templateRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final RegionRepository regionRepository;
     private final TemplateTagRepository templateTagRepository;
+    private final TemplateRegionRepository templateRegionRepository;
 
     @Transactional
     public TemplateCreateResponse createDraftTemplate(long userId) {
@@ -94,13 +103,40 @@ public class TemplateService {
         return new TemplateTagUpdateResponse(tagNames);
     }
 
+    @Transactional
+    public TemplateRegionUpdateResponse updateRegions(long userId, long templateId, TemplateRegionUpdateRequest request) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
+
+        List<Long> regionIds = request.regionIds();
+
+        List<Region> newRegions = regionRepository.findAllById(regionIds);
+        if (newRegions.size() != regionIds.size()) {
+            throw new InvalidRegionSelectionException();
+        }
+
+        templateRegionRepository.deleteByTemplate(template);
+        List<TemplateRegion> newTemplateRegions = newRegions.stream()
+                .map(region -> TemplateRegion.builder()
+                        .template(template)
+                        .region(region)
+                        .build())
+                .toList();
+        templateRegionRepository.saveAll(newTemplateRegions);
+
+        List<String> regionNames = newRegions.stream()
+                .map(Region::getName)
+                .collect(Collectors.toList());
+
+        return new TemplateRegionUpdateResponse(regionNames);
+    }
+
     private Template findTemplateAndVerifyOwner(long userId, long templateId) {
-        Template template = templateRepository.findById(templateId)
-                .orElseThrow(TemplateNotFoundException::new);
+        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
 
         if (!template.getGuideProfile().getUser().getId().equals(userId)) {
             throw new AccessDeniedException();
         }
+
         return template;
     }
 }

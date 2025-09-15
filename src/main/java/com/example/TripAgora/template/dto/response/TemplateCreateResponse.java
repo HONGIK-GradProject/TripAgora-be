@@ -1,3 +1,3 @@
-package com.example.TripAgora.template.dto;
+package com.example.TripAgora.template.dto.response;
 
 public record TemplateCreateResponse(Long templateId) {}

@@ -34,12 +34,6 @@ public class TemplateItinerary extends BaseEntity {
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
-
-    @Column(name = "display_order", nullable = false)
-    private Integer displayOrder;
-
     @Column(name = "latitude", nullable = false)
     private Double latitude;  // 위도
 
@@ -53,8 +47,6 @@ public class TemplateItinerary extends BaseEntity {
         this.title = title;
         this.content = content;
         this.startTime = startTime;
-        this.endTime = endTime;
-        this.displayOrder = displayOrder;
         this.latitude = latitude;
         this.longitude = longitude;
     }

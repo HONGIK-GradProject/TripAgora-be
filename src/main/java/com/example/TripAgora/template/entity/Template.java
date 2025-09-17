@@ -4,6 +4,7 @@ import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.region.entity.TemplateRegion;
 import com.example.TripAgora.tag.entity.TemplateTag;
+import com.example.TripAgora.template.dto.request.ItineraryItemRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,6 +39,7 @@ public class Template extends BaseEntity {
     @Column(name = "total_review_count")
     private Integer totalReviewCount = 0;
 
+    @OrderBy("day ASC , startTime ASC ")
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TemplateItinerary> templateItineraries = new ArrayList<>();
 
@@ -76,5 +78,22 @@ public class Template extends BaseEntity {
                 .displayOrder(this.templateImages.size() + 1)
                 .build();
         this.templateImages.add(templateImage);
+    }
+
+    public void clearItineraries() {
+        this.templateItineraries.clear();
+    }
+
+    public void addItinerary(ItineraryItemRequest item) {
+        TemplateItinerary itinerary = TemplateItinerary.builder()
+                .template(this)
+                .day(item.day())
+                .title(item.title())
+                .content(item.content())
+                .startTime(item.startTime())
+                .latitude(item.latitude())
+                .longitude(item.longitude())
+                .build();
+        this.templateItineraries.add(itinerary);
     }
 }

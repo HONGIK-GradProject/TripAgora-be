@@ -14,6 +14,7 @@ import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
 import com.example.TripAgora.tag.exception.MaximumTagsExceededException;
 import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.TemplateTagRepository;
+import com.example.TripAgora.template.dto.request.TemplateItineraryUpdateRequest;
 import com.example.TripAgora.template.dto.request.TemplateRegionUpdateRequest;
 import com.example.TripAgora.template.dto.request.TemplateTagUpdateRequest;
 import com.example.TripAgora.template.dto.request.TemplateUpdateRequest;
@@ -128,6 +129,16 @@ public class TemplateService {
                 .collect(Collectors.toList());
 
         return new TemplateRegionUpdateResponse(regionNames);
+    }
+
+    @Transactional
+    public void updateItineraries(long userId, long templateId, TemplateItineraryUpdateRequest request) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
+
+        template.clearItineraries();
+        if (request.itineraries() != null) {
+            request.itineraries().forEach(template::addItinerary);
+        }
     }
 
     private Template findTemplateAndVerifyOwner(long userId, long templateId) {

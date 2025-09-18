@@ -14,14 +14,12 @@ import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
 import com.example.TripAgora.tag.exception.MaximumTagsExceededException;
 import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.TemplateTagRepository;
-import com.example.TripAgora.template.dto.request.TemplateItineraryUpdateRequest;
-import com.example.TripAgora.template.dto.request.TemplateRegionUpdateRequest;
-import com.example.TripAgora.template.dto.request.TemplateTagUpdateRequest;
-import com.example.TripAgora.template.dto.request.TemplateUpdateRequest;
+import com.example.TripAgora.template.dto.request.*;
 import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
 import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
 import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
 import com.example.TripAgora.template.entity.Template;
+import com.example.TripAgora.template.exception.ItineraryDaySequenceInvalidException;
 import com.example.TripAgora.template.exception.TemplateNotFoundException;
 import com.example.TripAgora.template.repository.TemplateRepository;
 import com.example.TripAgora.user.entity.User;
@@ -32,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -135,10 +134,18 @@ public class TemplateService {
     public void updateItineraries(long userId, long templateId, TemplateItineraryUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
 
-        template.clearItineraries();
-        if (request.itineraries() != null) {
-            request.itineraries().forEach(template::addItinerary);
+        Map<Integer, List<ItineraryItemRequest>> itinerariesByDay = request.itineraries().stream()
+                .collect(Collectors.groupingBy(ItineraryItemRequest::day));
+
+        int maxDay = itinerariesByDay.keySet().stream().max(Integer::compareTo).orElse(0);
+        for (int i = 1; i <= maxDay; i++) {
+            if (!itinerariesByDay.containsKey(i)) {
+                throw new ItineraryDaySequenceInvalidException();
+            }
         }
+
+        template.clearItineraries();
+        request.itineraries().forEach(template::addItinerary);
     }
 
     private Template findTemplateAndVerifyOwner(long userId, long templateId) {

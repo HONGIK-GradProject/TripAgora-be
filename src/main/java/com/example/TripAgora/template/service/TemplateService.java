@@ -6,6 +6,7 @@ import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundExceptio
 import com.example.TripAgora.region.entity.Region;
 import com.example.TripAgora.region.entity.TemplateRegion;
 import com.example.TripAgora.region.exception.InvalidRegionSelectionException;
+import com.example.TripAgora.region.exception.RegionHierarchyConflictException;
 import com.example.TripAgora.region.repository.RegionRepository;
 import com.example.TripAgora.region.repository.TemplateRegionRepository;
 import com.example.TripAgora.tag.entity.Tag;
@@ -112,6 +113,12 @@ public class TemplateService {
         List<Region> newRegions = regionRepository.findAllById(regionIds);
         if (newRegions.size() != regionIds.size()) {
             throw new InvalidRegionSelectionException();
+        }
+
+        for (Region region : newRegions) {
+            if (region.getParent() != null && newRegions.contains(region.getParent())) {
+                throw new RegionHierarchyConflictException();
+            }
         }
 
         templateRegionRepository.deleteByTemplate(template);

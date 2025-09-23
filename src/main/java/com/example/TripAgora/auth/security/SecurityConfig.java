@@ -4,6 +4,7 @@ import com.example.TripAgora.auth.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,7 +29,11 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login/**", "/api/auth/reissue").permitAll()
-                        .requestMatchers("/api/guides/**", "api/templates/**").hasRole("GUIDE")
+                        .requestMatchers("/api/guides/**").hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.POST, "api/templates/**").hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.PATCH, "api/templates/**").hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.PUT, "api/templates/**").hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.DELETE, "api/templates/**").hasRole("GUIDE")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

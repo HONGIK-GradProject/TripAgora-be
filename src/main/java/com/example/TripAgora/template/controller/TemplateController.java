@@ -7,6 +7,7 @@ import com.example.TripAgora.template.dto.request.TemplateRegionUpdateRequest;
 import com.example.TripAgora.template.dto.request.TemplateTagUpdateRequest;
 import com.example.TripAgora.template.dto.request.TemplateUpdateRequest;
 import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
+import com.example.TripAgora.template.dto.response.TemplateDetailResponse;
 import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
 import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
 import com.example.TripAgora.template.service.TemplateService;
@@ -25,6 +26,13 @@ public class TemplateController {
     public ApiResponse<TemplateCreateResponse> createDraftTemplate(@AuthenticationPrincipal final long userId) {
         TemplateCreateResponse response = templateService.createDraftTemplate(userId);
         return ApiResponse.success(SuccessCode.CREATED, response);
+    }
+
+    @GetMapping("/{templateId}")
+    public ApiResponse<TemplateDetailResponse> getTemplate(@AuthenticationPrincipal final long userId,
+                                                           @PathVariable final long templateId) {
+        TemplateDetailResponse response = templateService.getTemplate(userId, templateId);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @PutMapping("/{templateId}")

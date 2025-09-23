@@ -17,9 +17,11 @@ import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.TemplateTagRepository;
 import com.example.TripAgora.template.dto.request.*;
 import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
+import com.example.TripAgora.template.dto.response.TemplateDetailResponse;
 import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
 import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
 import com.example.TripAgora.template.entity.Template;
+import com.example.TripAgora.template.entity.TemplateImage;
 import com.example.TripAgora.template.exception.ItineraryDaySequenceInvalidException;
 import com.example.TripAgora.template.exception.TemplateNotFoundException;
 import com.example.TripAgora.template.repository.TemplateRepository;
@@ -59,6 +61,30 @@ public class TemplateService {
 
         Template savedTemplate = templateRepository.save(draftTemplate);
         return new TemplateCreateResponse(savedTemplate.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public TemplateDetailResponse getTemplate(long userId, long templateId) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
+
+        List<String> regions = template.getTemplateRegions().stream()
+                .map(templateRegion -> templateRegion.getRegion().getName())
+                .collect(Collectors.toList());
+
+        List<String> tags = template.getTemplateTags().stream()
+                .map(templateTag -> templateTag.getTag().getName())
+                .collect(Collectors.toList());
+
+        List<String> imageUrls = template.getTemplateImages().stream()
+                .map(TemplateImage::getImageUrl)
+                .toList();
+
+        return new TemplateDetailResponse(
+                template.getTitle(),
+                template.getContent(),
+                regions,
+                tags,
+                imageUrls);
     }
 
     @Transactional

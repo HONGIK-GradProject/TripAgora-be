@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record TemplateUpdateRequest(
+public record TemplateSaveRequest(
         @NotBlank(message = "제목은 공백일 수 없습니다.")
         String title,
 

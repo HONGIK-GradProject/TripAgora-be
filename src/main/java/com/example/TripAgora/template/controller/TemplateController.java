@@ -2,14 +2,8 @@ package com.example.TripAgora.template.controller;
 
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
-import com.example.TripAgora.template.dto.request.TemplateItineraryUpdateRequest;
-import com.example.TripAgora.template.dto.request.TemplateRegionUpdateRequest;
-import com.example.TripAgora.template.dto.request.TemplateTagUpdateRequest;
-import com.example.TripAgora.template.dto.request.TemplateUpdateRequest;
-import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
-import com.example.TripAgora.template.dto.response.TemplateDetailResponse;
-import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
-import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
+import com.example.TripAgora.template.dto.request.*;
+import com.example.TripAgora.template.dto.response.*;
 import com.example.TripAgora.template.service.TemplateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class TemplateController {
     private final TemplateService templateService;
 
-    @PostMapping
-    public ApiResponse<TemplateCreateResponse> createDraftTemplate(@AuthenticationPrincipal final long userId) {
-        TemplateCreateResponse response = templateService.createDraftTemplate(userId);
-        return ApiResponse.success(SuccessCode.CREATED, response);
-    }
-
     @GetMapping("/{templateId}")
     public ApiResponse<TemplateDetailResponse> getTemplate(@AuthenticationPrincipal final long userId,
                                                            @PathVariable final long templateId) {
@@ -35,11 +23,41 @@ public class TemplateController {
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
+    @PostMapping
+    public ApiResponse<TemplateCreateResponse> createDraftTemplate(@AuthenticationPrincipal final long userId) {
+        TemplateCreateResponse response = templateService.createDraftTemplate(userId);
+        return ApiResponse.success(SuccessCode.CREATED, response);
+    }
+
     @PutMapping("/{templateId}")
-    public ApiResponse<Void> updateTemplate(@AuthenticationPrincipal final long userId,
-                                            @PathVariable final long templateId,
-                                            @RequestBody @Valid final TemplateUpdateRequest request) {
-        templateService.updateTemplate(userId, templateId, request);
+    public ApiResponse<Void> saveTemplate(@AuthenticationPrincipal final long userId,
+                                          @PathVariable final long templateId,
+                                          @RequestBody @Valid final TemplateSaveRequest request) {
+        templateService.saveTemplate(userId, templateId, request);
+        return ApiResponse.success(SuccessCode.OK);
+    }
+
+    @PatchMapping("/{templateId}/title")
+    public ApiResponse<TemplateTitleUpdateResponse> updateTitle(@AuthenticationPrincipal final long userId,
+                                                                @PathVariable final long templateId,
+                                                                @RequestBody @Valid final TemplateTitleUpdateRequest request) {
+        TemplateTitleUpdateResponse response = templateService.updateTitle(userId, templateId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @PatchMapping("/{templateId}/content")
+    public ApiResponse<TemplateContentUpdateResponse> updateContent(@AuthenticationPrincipal final long userId,
+                                                                    @PathVariable final long templateId,
+                                                                    @RequestBody @Valid final TemplateContentUpdateRequest request) {
+        TemplateContentUpdateResponse response = templateService.updateContent(userId, templateId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @PatchMapping("/{templateId}/images")
+    public ApiResponse<Void> updateImages(@AuthenticationPrincipal final long userId,
+                                          @PathVariable final long templateId,
+                                          @RequestBody @Valid final TemplateImageUpdateRequest request) {
+        templateService.updateImages(userId, templateId, request);
         return ApiResponse.success(SuccessCode.OK);
     }
 

@@ -16,10 +16,7 @@ import com.example.TripAgora.tag.exception.MaximumTagsExceededException;
 import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.TemplateTagRepository;
 import com.example.TripAgora.template.dto.request.*;
-import com.example.TripAgora.template.dto.response.TemplateCreateResponse;
-import com.example.TripAgora.template.dto.response.TemplateDetailResponse;
-import com.example.TripAgora.template.dto.response.TemplateRegionUpdateResponse;
-import com.example.TripAgora.template.dto.response.TemplateTagUpdateResponse;
+import com.example.TripAgora.template.dto.response.*;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.entity.TemplateImage;
 import com.example.TripAgora.template.exception.ItineraryDaySequenceInvalidException;
@@ -88,10 +85,37 @@ public class TemplateService {
     }
 
     @Transactional
-    public void updateTemplate(long userId, long templateId, TemplateUpdateRequest request) {
+    public void saveTemplate(long userId, long templateId, TemplateSaveRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
 
-        template.updateInfo(request.title(), request.content());
+        template.updateTitle(request.title());
+        template.updateContent(request.content());
+
+        template.clearImages();
+        if (request.imageUrls() != null) {
+            request.imageUrls().forEach(template::addImage);
+        }
+    }
+
+    @Transactional
+    public TemplateTitleUpdateResponse updateTitle(long userId, long templateId, TemplateTitleUpdateRequest request) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
+        template.updateTitle(request.title());
+
+        return new TemplateTitleUpdateResponse(template.getTitle());
+    }
+
+    @Transactional
+    public TemplateContentUpdateResponse updateContent(long userId, long templateId, TemplateContentUpdateRequest request) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
+        template.updateContent(request.content());
+
+        return new TemplateContentUpdateResponse(template.getContent());
+    }
+
+    @Transactional
+    public void updateImages(long userId, long templateId, TemplateImageUpdateRequest request) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
 
         template.clearImages();
         if (request.imageUrls() != null) {

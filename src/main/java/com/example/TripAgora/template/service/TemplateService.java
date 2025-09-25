@@ -61,8 +61,8 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateDetailResponse getTemplate(long userId, long templateId) {
-        Template template = findTemplateAndVerifyOwner(userId, templateId);
+    public TemplateDetailResponse getTemplate(long templateId) {
+        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
 
         List<String> regions = template.getTemplateRegions().stream()
                 .map(templateRegion -> templateRegion.getRegion().getName())
@@ -82,6 +82,23 @@ public class TemplateService {
                 regions,
                 tags,
                 imageUrls);
+    }
+
+    @Transactional(readOnly = true)
+    public TemplateItinerariesResponse getItineraries(long templateId) {
+        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+
+        List<ItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
+                .map(itinerary -> new ItineraryItemResponse(
+                        itinerary.getDay(),
+                        itinerary.getTitle(),
+                        itinerary.getContent(),
+                        itinerary.getStartTime(),
+                        itinerary.getLatitude(),
+                        itinerary.getLongitude()))
+                .toList();
+
+        return new TemplateItinerariesResponse(itineraries);
     }
 
     @Transactional

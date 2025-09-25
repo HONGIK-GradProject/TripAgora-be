@@ -22,6 +22,12 @@ public class TemplateController {
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
+    @GetMapping("/{templateId}/itineraries")
+    public ApiResponse<TemplateItinerariesResponse> getItineraries(@PathVariable final long templateId) {
+        TemplateItinerariesResponse response = templateService.getItineraries(templateId);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
     @PostMapping
     public ApiResponse<TemplateCreateResponse> createDraftTemplate(@AuthenticationPrincipal final long userId) {
         TemplateCreateResponse response = templateService.createDraftTemplate(userId);

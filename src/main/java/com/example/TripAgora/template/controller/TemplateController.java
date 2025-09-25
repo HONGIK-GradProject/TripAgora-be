@@ -17,9 +17,8 @@ public class TemplateController {
     private final TemplateService templateService;
 
     @GetMapping("/{templateId}")
-    public ApiResponse<TemplateDetailResponse> getTemplate(@AuthenticationPrincipal final long userId,
-                                                           @PathVariable final long templateId) {
-        TemplateDetailResponse response = templateService.getTemplate(userId, templateId);
+    public ApiResponse<TemplateDetailResponse> getTemplate(@PathVariable final long templateId) {
+        TemplateDetailResponse response = templateService.getTemplate(templateId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

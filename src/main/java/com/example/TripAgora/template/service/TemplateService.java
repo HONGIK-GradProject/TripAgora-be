@@ -26,6 +26,8 @@ import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,8 +63,8 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateDetailResponse getTemplate(long templateId) {
-        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+    public TemplateDetailResponse getTemplate(long userId, long templateId) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
 
         List<String> regions = template.getTemplateRegions().stream()
                 .map(templateRegion -> templateRegion.getRegion().getName())
@@ -85,8 +87,40 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateItinerariesResponse getItineraries(long templateId) {
-        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+    public TemplateListResponse getMyTemplateList(long userId, Pageable pageable) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        GuideProfile guideProfile = user.getGuideProfile();
+        if (guideProfile == null) {
+            throw new GuideProfileNotFoundException();
+        }
+
+        Slice<Template> templateSlice = templateRepository.findByGuideProfileOrderByIdDesc(guideProfile, pageable);
+
+        List<TemplateSummaryResponse> summaries = templateSlice.getContent().stream()
+                .map(template -> {
+                    String representativeImageUrl = template.getTemplateImages().stream()
+                            .filter(image -> image.getDisplayOrder() == 1)
+                            .findFirst()
+                            .map(TemplateImage::getImageUrl)
+                            .orElse(null);
+
+                    List<String> regions = template.getTemplateRegions().stream()
+                            .map(templateRegion -> templateRegion.getRegion().getName())
+                            .collect(Collectors.toList());
+
+                    return new TemplateSummaryResponse(
+                            template.getId(),
+                            template.getTitle(),
+                            representativeImageUrl,
+                            regions);
+                }).collect(Collectors.toList());
+
+        return new TemplateListResponse(summaries, templateSlice.hasNext());
+    }
+
+    @Transactional(readOnly = true)
+    public TemplateItinerariesResponse getItineraries(long userId, long templateId) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
 
         List<ItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
                 .map(itinerary -> new ItineraryItemResponse(

@@ -7,6 +7,8 @@ import com.example.TripAgora.template.dto.response.*;
 import com.example.TripAgora.template.service.TemplateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,14 +19,23 @@ public class TemplateController {
     private final TemplateService templateService;
 
     @GetMapping("/{templateId}")
-    public ApiResponse<TemplateDetailResponse> getTemplate(@PathVariable final long templateId) {
-        TemplateDetailResponse response = templateService.getTemplate(templateId);
+    public ApiResponse<TemplateDetailResponse> getTemplate(@AuthenticationPrincipal final long userId,
+                                                           @PathVariable final long templateId) {
+        TemplateDetailResponse response = templateService.getTemplate(userId, templateId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @GetMapping("/{templateId}/itineraries")
-    public ApiResponse<TemplateItinerariesResponse> getItineraries(@PathVariable final long templateId) {
-        TemplateItinerariesResponse response = templateService.getItineraries(templateId);
+    public ApiResponse<TemplateItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
+                                                                   @PathVariable final long templateId) {
+        TemplateItinerariesResponse response = templateService.getItineraries(userId, templateId);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @GetMapping("/my")
+    public ApiResponse<TemplateListResponse> getMyTemplates(@AuthenticationPrincipal final long userId,
+                                                            @PageableDefault(size = 10) Pageable pageable) {
+        TemplateListResponse response = templateService.getMyTemplateList(userId, pageable);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

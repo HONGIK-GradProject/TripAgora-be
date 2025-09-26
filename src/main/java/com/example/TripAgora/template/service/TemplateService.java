@@ -61,8 +61,8 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateDetailResponse getTemplate(long templateId) {
-        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+    public TemplateDetailResponse getTemplate(long userId, long templateId) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
 
         List<String> regions = template.getTemplateRegions().stream()
                 .map(templateRegion -> templateRegion.getRegion().getName())
@@ -85,8 +85,8 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateItinerariesResponse getItineraries(long templateId) {
-        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+    public TemplateItinerariesResponse getItineraries(long userId, long templateId) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
 
         List<ItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
                 .map(itinerary -> new ItineraryItemResponse(

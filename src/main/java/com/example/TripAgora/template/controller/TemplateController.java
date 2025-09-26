@@ -17,14 +17,16 @@ public class TemplateController {
     private final TemplateService templateService;
 
     @GetMapping("/{templateId}")
-    public ApiResponse<TemplateDetailResponse> getTemplate(@PathVariable final long templateId) {
-        TemplateDetailResponse response = templateService.getTemplate(templateId);
+    public ApiResponse<TemplateDetailResponse> getTemplate(@AuthenticationPrincipal final long userId,
+                                                           @PathVariable final long templateId) {
+        TemplateDetailResponse response = templateService.getTemplate(userId, templateId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @GetMapping("/{templateId}/itineraries")
-    public ApiResponse<TemplateItinerariesResponse> getItineraries(@PathVariable final long templateId) {
-        TemplateItinerariesResponse response = templateService.getItineraries(templateId);
+    public ApiResponse<TemplateItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
+                                                                   @PathVariable final long templateId) {
+        TemplateItinerariesResponse response = templateService.getItineraries(userId, templateId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

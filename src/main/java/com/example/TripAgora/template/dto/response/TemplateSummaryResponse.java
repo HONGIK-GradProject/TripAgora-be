@@ -6,4 +6,4 @@ public record TemplateSummaryResponse(
         Long templateId,
         String title,
         String firstImageUrl,
-        List<String> regionNames) {}
+        List<Long> regionIds) {}

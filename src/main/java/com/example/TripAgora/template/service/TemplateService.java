@@ -66,12 +66,12 @@ public class TemplateService {
     public TemplateDetailResponse getTemplate(long userId, long templateId) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
 
-        List<String> regions = template.getTemplateRegions().stream()
-                .map(templateRegion -> templateRegion.getRegion().getName())
+        List<Long> regionIds = template.getTemplateRegions().stream()
+                .map(templateRegion -> templateRegion.getRegion().getId())
                 .collect(Collectors.toList());
 
-        List<String> tags = template.getTemplateTags().stream()
-                .map(templateTag -> templateTag.getTag().getName())
+        List<Long> tagIds = template.getTemplateTags().stream()
+                .map(templateTag -> templateTag.getTag().getId())
                 .collect(Collectors.toList());
 
         List<String> imageUrls = template.getTemplateImages().stream()
@@ -81,8 +81,8 @@ public class TemplateService {
         return new TemplateDetailResponse(
                 template.getTitle(),
                 template.getContent(),
-                regions,
-                tags,
+                regionIds,
+                tagIds,
                 imageUrls);
     }
 
@@ -104,15 +104,15 @@ public class TemplateService {
                             .map(TemplateImage::getImageUrl)
                             .orElse(null);
 
-                    List<String> regions = template.getTemplateRegions().stream()
-                            .map(templateRegion -> templateRegion.getRegion().getName())
+                    List<Long> regionIds = template.getTemplateRegions().stream()
+                            .map(templateRegion -> templateRegion.getRegion().getId())
                             .collect(Collectors.toList());
 
                     return new TemplateSummaryResponse(
                             template.getId(),
                             template.getTitle(),
                             representativeImageUrl,
-                            regions);
+                            regionIds);
                 }).collect(Collectors.toList());
 
         return new TemplateListResponse(summaries, templateSlice.hasNext());
@@ -198,11 +198,11 @@ public class TemplateService {
                 .toList();
         templateTagRepository.saveAll(newUserTags);
 
-        List<String> tagNames = newTags.stream()
-                .map(Tag::getName)
+        List<Long> newTagIds = newTags.stream()
+                .map(Tag::getId)
                 .collect(Collectors.toList());
 
-        return new TemplateTagUpdateResponse(tagNames);
+        return new TemplateTagUpdateResponse(newTagIds);
     }
 
     @Transactional
@@ -231,11 +231,11 @@ public class TemplateService {
                 .toList();
         templateRegionRepository.saveAll(newTemplateRegions);
 
-        List<String> regionNames = newRegions.stream()
-                .map(Region::getName)
+        List<Long> newRegionIds = newRegions.stream()
+                .map(Region::getId)
                 .collect(Collectors.toList());
 
-        return new TemplateRegionUpdateResponse(regionNames);
+        return new TemplateRegionUpdateResponse(newRegionIds);
     }
 
     @Transactional

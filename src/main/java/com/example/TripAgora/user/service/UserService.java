@@ -71,10 +71,10 @@ public class UserService {
                 .toList();
         userTagRepository.saveAll(newUserTags);
 
-        List<String> tagNames = newTags.stream()
-                .map(Tag::getName)
+        List<Long> newTagIds = newTags.stream()
+                .map(Tag::getId)
                 .collect(Collectors.toList());
 
-        return new UserTagUpdateResponse(tagNames);
+        return new UserTagUpdateResponse(newTagIds);
     }
 }

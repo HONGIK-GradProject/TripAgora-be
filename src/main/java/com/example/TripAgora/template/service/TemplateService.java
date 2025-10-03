@@ -124,6 +124,7 @@ public class TemplateService {
 
         List<ItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
                 .map(itinerary -> new ItineraryItemResponse(
+                        itinerary.getId(),
                         itinerary.getDay(),
                         itinerary.getTitle(),
                         itinerary.getContent(),

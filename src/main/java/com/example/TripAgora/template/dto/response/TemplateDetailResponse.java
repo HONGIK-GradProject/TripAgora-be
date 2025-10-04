@@ -4,6 +4,6 @@ import java.util.List;
 
 public record TemplateDetailResponse(String title,
                                      String content,
-                                     List<String> regionNames,
-                                     List<String> tagNames,
+                                     List<Long> regionIds,
+                                     List<Long> tagIds,
                                      List<String> imageUrls) {}

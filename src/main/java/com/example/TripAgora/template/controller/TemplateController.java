@@ -100,4 +100,11 @@ public class TemplateController {
         templateService.updateItineraries(userId, templateId, request);
         return ApiResponse.success(SuccessCode.OK);
     }
+
+    @DeleteMapping("/{templateId}")
+    public ApiResponse<Void> deleteTemplate(@AuthenticationPrincipal final long userId,
+                                            @PathVariable final long templateId) {
+        templateService.deleteTemplate(userId, templateId);
+        return ApiResponse.success(SuccessCode.OK);
+    }
 }

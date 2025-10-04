@@ -257,6 +257,12 @@ public class TemplateService {
         request.itineraries().forEach(template::addItinerary);
     }
 
+    @Transactional
+    public void deleteTemplate(long userId, long templateId) {
+        Template template = findTemplateAndVerifyOwner(userId, templateId);
+        templateRepository.delete(template);
+    }
+
     private Template findTemplateAndVerifyOwner(long userId, long templateId) {
         Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
 

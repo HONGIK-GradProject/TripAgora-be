@@ -3,7 +3,9 @@ package com.example.TripAgora.user.controller;
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.guideProfile.service.GuideProfileService;
-import com.example.TripAgora.user.dto.*;
+import com.example.TripAgora.user.dto.request.NicknameUpdateRequest;
+import com.example.TripAgora.user.dto.request.UserTagUpdateRequest;
+import com.example.TripAgora.user.dto.response.*;
 import com.example.TripAgora.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final GuideProfileService guideProfileService;
+
+    @GetMapping("/me")
+    public ApiResponse<UserInfoResponse> getUserInfo(@AuthenticationPrincipal final long userId) {
+        UserInfoResponse response = userService.getUserInfo(userId);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
 
     @PatchMapping("/me/nickname")
     public ApiResponse<NicknameUpdateResponse> updateNickname(@AuthenticationPrincipal final long userId,

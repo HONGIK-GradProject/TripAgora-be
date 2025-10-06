@@ -6,10 +6,11 @@ import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
 import com.example.TripAgora.tag.exception.MinimumTagsRequiredException;
 import com.example.TripAgora.tag.repository.TagRepository;
 import com.example.TripAgora.tag.repository.UserTagRepository;
-import com.example.TripAgora.user.dto.NicknameUpdateRequest;
-import com.example.TripAgora.user.dto.NicknameUpdateResponse;
-import com.example.TripAgora.user.dto.UserTagUpdateRequest;
-import com.example.TripAgora.user.dto.UserTagUpdateResponse;
+import com.example.TripAgora.user.dto.request.NicknameUpdateRequest;
+import com.example.TripAgora.user.dto.response.NicknameUpdateResponse;
+import com.example.TripAgora.user.dto.request.UserTagUpdateRequest;
+import com.example.TripAgora.user.dto.response.UserInfoResponse;
+import com.example.TripAgora.user.dto.response.UserTagUpdateResponse;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.DuplicateNicknameException;
 import com.example.TripAgora.user.exception.InvalidNicknameFormatException;
@@ -28,6 +29,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final UserTagRepository userTagRepository;
+
+    @Transactional(readOnly = true)
+    public UserInfoResponse getUserInfo(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        String nickname = user.getNickname();
+        String role = user.getRole().toString();
+        String imageUrl = user.getImageUrl();
+
+        return new UserInfoResponse(nickname, role, imageUrl);
+    }
 
     @Transactional
     public NicknameUpdateResponse updateNickname(long userId, NicknameUpdateRequest request) {

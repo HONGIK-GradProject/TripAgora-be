@@ -1,4 +1,4 @@
-package com.example.TripAgora.user.dto;
+package com.example.TripAgora.user.dto.response;
 
 import java.util.List;
 

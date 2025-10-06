@@ -1,4 +1,4 @@
-package com.example.TripAgora.user.dto;
+package com.example.TripAgora.user.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

@@ -1,5 +1,6 @@
 package com.example.TripAgora.user.service;
 
+import com.example.TripAgora.auth.repository.RefreshTokenRepository;
 import com.example.TripAgora.tag.entity.Tag;
 import com.example.TripAgora.tag.entity.UserTag;
 import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
@@ -29,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final UserTagRepository userTagRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(long userId) {
@@ -39,6 +41,13 @@ public class UserService {
         String imageUrl = user.getImageUrl();
 
         return new UserInfoResponse(nickname, role, imageUrl);
+    }
+
+    @Transactional
+    public void withdrawUser(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        refreshTokenRepository.deleteByUserId(userId);
+        userRepository.delete(user);
     }
 
     @Transactional

@@ -25,6 +25,12 @@ public class UserController {
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
+    @DeleteMapping("/me")
+    public ApiResponse<Void> withdrawUser(@AuthenticationPrincipal final long userId) {
+        userService.withdrawUser(userId);
+        return ApiResponse.success(SuccessCode.OK);
+    }
+
     @PatchMapping("/me/nickname")
     public ApiResponse<NicknameUpdateResponse> updateNickname(@AuthenticationPrincipal final long userId,
                                                               @RequestBody @Valid final NicknameUpdateRequest request) {

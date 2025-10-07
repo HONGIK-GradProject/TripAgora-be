@@ -1,6 +1,7 @@
 package com.example.TripAgora.guideProfile.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
+import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,6 +39,9 @@ public class GuideProfile extends BaseEntity {
 
     @OneToMany(mappedBy = "guideProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GuidePortfolio> portfolios = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guideProfile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Template> templates = new ArrayList<>();
 
     @Builder
     private GuideProfile (User user) {

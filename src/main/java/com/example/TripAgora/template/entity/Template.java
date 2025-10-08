@@ -52,9 +52,6 @@ public class Template extends BaseEntity {
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TemplateRegion> templateRegions = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "tripTemplate", cascade = CascadeType.ALL)
-//    private List<TripSession> tripSessions = new ArrayList<>();
-
     @Builder
     private Template(GuideProfile guideProfile, String title, String content) {
         this.guideProfile = guideProfile;

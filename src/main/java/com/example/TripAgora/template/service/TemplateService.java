@@ -263,7 +263,7 @@ public class TemplateService {
         templateRepository.delete(template);
     }
 
-    private Template findTemplateAndVerifyOwner(long userId, long templateId) {
+    public Template findTemplateAndVerifyOwner(long userId, long templateId) {
         Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
 
         if (!template.getGuideProfile().getUser().getId().equals(userId)) {

@@ -41,7 +41,7 @@ public class TemplateItinerary extends BaseEntity {
     private Double longitude; // 경도
 
     @Builder
-    private TemplateItinerary(Template template, Integer day, String title, String content, LocalTime startTime, LocalTime endTime, Integer displayOrder, String placeName, Double latitude, Double longitude) {
+    private TemplateItinerary(Template template, Integer day, String title, String content, LocalTime startTime, Double latitude, Double longitude) {
         this.template = template;
         this.day = day;
         this.title = title;

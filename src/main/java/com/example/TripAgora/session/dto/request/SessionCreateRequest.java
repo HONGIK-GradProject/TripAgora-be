@@ -18,5 +18,4 @@ public record SessionCreateRequest(
         @NotNull(message = "여행 시작일은 필수입니다.")
         @FutureOrPresent(message = "여행 시작일은 오늘 이후여야 합니다.")
         @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate startDate
-) {}
+        LocalDate startDate) {}

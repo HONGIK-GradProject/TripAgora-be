@@ -2,6 +2,7 @@ package com.example.TripAgora.session.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.template.entity.Template;
+import com.example.TripAgora.template.entity.TemplateItinerary;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,17 +46,54 @@ public class Session extends BaseEntity {
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionItinerary> sessionItineraries = new ArrayList<>();
 
-    // ✨ 템플릿 정보를 바탕으로 세션을 생성하는 빌더
     @Builder
-    private Session(Template template, Integer maxParticipants, LocalDate startDate, LocalDate endDate) {
+    private Session(Template template, Integer maxParticipants, LocalDate startDate) {
         this.template = template;
         this.maxParticipants = maxParticipants;
         this.startDate = startDate;
-        this.endDate = endDate;
+        this.endDate = calculateEndDate(template, startDate);
         this.status = SessionStatus.RECRUITING;
     }
 
     public void addItinerary(SessionItinerary itinerary) {
         this.sessionItineraries.add(itinerary);
+    }
+
+    public void updateInfo(Integer maxParticipants, LocalDate startDate) {
+        this.maxParticipants = maxParticipants;
+        this.startDate = startDate;
+        this.endDate = calculateEndDate(this.template, startDate);
+    }
+
+    // TODO: 추후 여행 참여 로직 작성 시 수정
+    public void updateStatus(SessionStatus newStatus) {
+        this.status = newStatus;
+    }
+
+    // TODO: 추후 여행 참여 로직 작성 시 수정
+    public void increaseParticipant() {
+        if (this.currentParticipants >= this.maxParticipants) {
+            throw new IllegalStateException("모집 정원이 가득 찼습니다.");
+        }
+
+        this.currentParticipants++;
+    }
+
+    // TODO: 추후 여행 참여 로직 작성 시 수정
+    public void decreaseParticipant() {
+        if (this.currentParticipants <= 0) {
+            throw new IllegalStateException("현재 참가자가 없습니다.");
+        }
+
+        this.currentParticipants--;
+    }
+
+    public LocalDate calculateEndDate(Template template, LocalDate startDate) {
+        int maxDay = template.getTemplateItineraries().stream()
+                .mapToInt(TemplateItinerary::getDay)
+                .max()
+                .orElse(1);  // 일정이 없으면 당일 여행으로 간주
+
+        return startDate.plusDays(maxDay - 1);
     }
 }

@@ -3,6 +3,7 @@ package com.example.TripAgora.session.controller;
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
+import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
 import com.example.TripAgora.session.service.SessionService;
@@ -28,5 +29,20 @@ public class SessionController {
     public ApiResponse<SessionDetailResponse> getSessionDetails(@PathVariable final long sessionId) {
         SessionDetailResponse response = sessionService.getSessionDetails(sessionId);
         return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @PatchMapping("/{sessionId}")
+    public ApiResponse<Void> updateSession(@AuthenticationPrincipal final long userId,
+                                           @PathVariable final long sessionId,
+                                           @RequestBody @Valid final SessionUpdateRequest request) {
+        sessionService.updateSession(userId, sessionId, request);
+        return ApiResponse.success(SuccessCode.OK);
+    }
+
+    @DeleteMapping("/{sessionId}")
+    public ApiResponse<Void> deleteSession(@AuthenticationPrincipal final long userId,
+                                           @PathVariable final long sessionId) {
+        sessionService.deleteSession(userId, sessionId);
+        return ApiResponse.success(SuccessCode.OK);
     }
 }

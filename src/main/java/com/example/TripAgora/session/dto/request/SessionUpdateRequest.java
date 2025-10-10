@@ -7,10 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record SessionCreateRequest(
-        @NotNull(message = "템플릿 ID는 필수입니다.")
-        Long templateId,
-
+public record SessionUpdateRequest(
         @NotNull(message = "모집인원은 필수입니다.")
         @Min(value = 1, message = "모집인원은 1명 이상이어야 합니다.")
         Integer maxParticipants,

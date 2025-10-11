@@ -1,10 +1,14 @@
 package com.example.TripAgora.session.service;
 
 import com.example.TripAgora.auth.exception.AccessDeniedException;
+import com.example.TripAgora.guideProfile.entity.GuideProfile;
+import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
+import com.example.TripAgora.session.dto.response.SessionListResponse;
+import com.example.TripAgora.session.dto.response.SessionSummaryResponse;
 import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionItinerary;
 import com.example.TripAgora.session.entity.SessionStatus;
@@ -14,7 +18,12 @@ import com.example.TripAgora.session.exception.SessionNotRecruitingException;
 import com.example.TripAgora.session.repository.SessionRepository;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.service.TemplateService;
+import com.example.TripAgora.user.entity.User;
+import com.example.TripAgora.user.exception.UserNotFoundException;
+import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +35,7 @@ import java.util.stream.Collectors;
 public class SessionService {
     private final TemplateService templateService;
     private final SessionRepository sessionRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public SessionCreateResponse createSession(long userId, SessionCreateRequest request) {
@@ -104,6 +114,17 @@ public class SessionService {
         sessionRepository.delete(session);
     }
 
+    @Transactional(readOnly = true)
+    public SessionListResponse getMySessions(long userId, List<SessionStatus> statuses, Pageable pageable) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        GuideProfile guideProfile = user.getGuideProfile();
+        if (guideProfile == null) {
+            throw new GuideProfileNotFoundException();
+        }
+
+        return getSessionsByGuideProfile(guideProfile, statuses, pageable);
+    }
+
     private Session findSessionAndVerifyOwner(long userId, long sessionId) {
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
@@ -112,5 +133,34 @@ public class SessionService {
         }
 
         return session;
+    }
+
+    private SessionListResponse getSessionsByGuideProfile(GuideProfile guideProfile, List<SessionStatus> statuses, Pageable pageable) {
+        Slice<Session> sessionSlice = sessionRepository.findByTemplate_GuideProfileAndStatusIn(guideProfile, statuses, pageable);
+
+        List<SessionSummaryResponse> summaries = sessionSlice.getContent().stream()
+                .map(session -> {
+                    Template template = session.getTemplate();
+                    String imageUrl = template.getTemplateImages().isEmpty() ? null : template.getTemplateImages().get(0).getImageUrl();
+
+                    List<String> regions = template.getTemplateRegions().stream()
+                            .map(tr -> tr.getRegion().getName())
+                            .toList();
+
+                    return new SessionSummaryResponse(
+                            session.getId(),
+                            template.getTitle(),
+                            imageUrl,
+                            regions,
+                            session.getMaxParticipants(),
+                            session.getCurrentParticipants(),
+                            session.getStartDate(),
+                            session.getEndDate(),
+                            session.getStatus().name()
+                    );
+                })
+                .toList();
+
+        return new SessionListResponse(summaries, sessionSlice.hasNext());
     }
 }

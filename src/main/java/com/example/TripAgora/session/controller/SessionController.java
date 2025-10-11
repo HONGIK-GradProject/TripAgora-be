@@ -6,11 +6,17 @@ import com.example.TripAgora.session.dto.request.SessionCreateRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
+import com.example.TripAgora.session.dto.response.SessionListResponse;
+import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.service.SessionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sessions")
@@ -44,5 +50,13 @@ public class SessionController {
                                            @PathVariable final long sessionId) {
         sessionService.deleteSession(userId, sessionId);
         return ApiResponse.success(SuccessCode.OK);
+    }
+
+    @GetMapping("/my")
+    public ApiResponse<SessionListResponse> getMySessions(@AuthenticationPrincipal final long userId,
+                                                          @RequestParam(required = false) List<SessionStatus> statuses,
+                                                          @PageableDefault(size = 10) Pageable pageable) {
+        SessionListResponse response = sessionService.getMySessions(userId, statuses, pageable);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 }

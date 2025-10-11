@@ -87,7 +87,7 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateListResponse getMyTemplateList(long userId, Pageable pageable) {
+    public TemplateListResponse getMyTemplates(long userId, Pageable pageable) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         GuideProfile guideProfile = user.getGuideProfile();
         if (guideProfile == null) {

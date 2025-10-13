@@ -88,7 +88,7 @@ public class Session extends BaseEntity {
         this.currentParticipants--;
     }
 
-    public LocalDate calculateEndDate(Template template, LocalDate startDate) {
+    public static LocalDate calculateEndDate(Template template, LocalDate startDate) {
         int maxDay = template.getTemplateItineraries().stream()
                 .mapToInt(TemplateItinerary::getDay)
                 .max()

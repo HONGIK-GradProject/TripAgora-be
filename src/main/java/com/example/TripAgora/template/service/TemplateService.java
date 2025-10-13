@@ -122,8 +122,8 @@ public class TemplateService {
     public TemplateItinerariesResponse getItineraries(long userId, long templateId) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
 
-        List<ItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
-                .map(itinerary -> new ItineraryItemResponse(
+        List<TemplateItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
+                .map(itinerary -> new TemplateItineraryItemResponse(
                         itinerary.getId(),
                         itinerary.getDay(),
                         itinerary.getTitle(),

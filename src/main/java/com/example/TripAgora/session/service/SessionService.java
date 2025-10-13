@@ -10,6 +10,7 @@ import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionItinerary;
 import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.exception.InvalidMaxParticipantsException;
+import com.example.TripAgora.session.exception.SessionDateConflictException;
 import com.example.TripAgora.session.exception.SessionNotFoundException;
 import com.example.TripAgora.session.exception.SessionNotRecruitingException;
 import com.example.TripAgora.session.repository.SessionRepository;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,18 @@ public class SessionService {
     @Transactional
     public SessionCreateResponse createSession(long userId, SessionCreateRequest request) {
         Template template = templateService.findTemplateAndVerifyOwner(userId, request.templateId());
+
+        LocalDate endDate = Session.calculateEndDate(template, request.startDate());
+
+        boolean hasConflict = sessionRepository.existsConflictingSession(
+                template.getGuideProfile(),
+                request.startDate(),
+                endDate
+        );
+
+        if (hasConflict) {
+            throw new SessionDateConflictException();
+        }
 
         Session session = Session.builder()
                 .template(template)
@@ -100,6 +114,21 @@ public class SessionService {
 
         if (request.maxParticipants() < session.getCurrentParticipants()) {
             throw new InvalidMaxParticipantsException();
+        }
+
+        if (!request.startDate().equals(session.getStartDate())) {
+            LocalDate newEndDate = Session.calculateEndDate(session.getTemplate(), request.startDate());
+
+            boolean hasConflict = sessionRepository.existsConflictingSession(
+                    session.getTemplate().getGuideProfile(),
+                    sessionId,
+                    request.startDate(),
+                    newEndDate
+            );
+
+            if (hasConflict) {
+                throw new SessionDateConflictException();
+            }
         }
 
         session.updateInfo(request.maxParticipants(), request.startDate());

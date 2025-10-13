@@ -5,10 +5,7 @@ import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
-import com.example.TripAgora.session.dto.response.SessionCreateResponse;
-import com.example.TripAgora.session.dto.response.SessionDetailResponse;
-import com.example.TripAgora.session.dto.response.SessionListResponse;
-import com.example.TripAgora.session.dto.response.SessionSummaryResponse;
+import com.example.TripAgora.session.dto.response.*;
 import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionItinerary;
 import com.example.TripAgora.session.entity.SessionStatus;
@@ -123,6 +120,24 @@ public class SessionService {
         }
 
         return getSessionsByGuideProfile(guideProfile, statuses, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public SessionItinerariesResponse getItineraries(long userId, long sessionId) {
+        Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
+
+        List<SessionItineraryItemResponse> itineraries = session.getSessionItineraries().stream()
+                .map(itinerary -> new SessionItineraryItemResponse(
+                        itinerary.getId(),
+                        itinerary.getDay(),
+                        itinerary.getTitle(),
+                        itinerary.getContent(),
+                        itinerary.getStartTime(),
+                        itinerary.getLatitude(),
+                        itinerary.getLongitude()))
+                .toList();
+
+        return new SessionItinerariesResponse(itineraries);
     }
 
     private Session findSessionAndVerifyOwner(long userId, long sessionId) {

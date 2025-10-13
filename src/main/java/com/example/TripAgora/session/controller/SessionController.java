@@ -6,6 +6,7 @@ import com.example.TripAgora.session.dto.request.SessionCreateRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
+import com.example.TripAgora.session.dto.response.SessionItinerariesResponse;
 import com.example.TripAgora.session.dto.response.SessionListResponse;
 import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.service.SessionService;
@@ -50,6 +51,13 @@ public class SessionController {
                                            @PathVariable final long sessionId) {
         sessionService.deleteSession(userId, sessionId);
         return ApiResponse.success(SuccessCode.OK);
+    }
+
+    @GetMapping("/{sessionId}/itineraries")
+    public ApiResponse<SessionItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
+                                                                   @PathVariable final long sessionId) {
+        SessionItinerariesResponse response = sessionService.getItineraries(userId, sessionId);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @GetMapping("/my")

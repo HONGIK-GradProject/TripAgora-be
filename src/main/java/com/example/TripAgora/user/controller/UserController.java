@@ -9,8 +9,10 @@ import com.example.TripAgora.user.dto.response.*;
 import com.example.TripAgora.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,6 +44,13 @@ public class UserController {
     public ApiResponse<UserTagUpdateResponse> updateTags(@AuthenticationPrincipal final long userId,
                                                          @RequestBody @Valid final UserTagUpdateRequest request) {
         UserTagUpdateResponse response = userService.updateTags(userId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @PatchMapping(value = "/me/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<ProfileImageUpdateResponse> updateProfileImage(@AuthenticationPrincipal final long userId,
+                                                                      @RequestParam("imageFile") MultipartFile imageFile) {
+        ProfileImageUpdateResponse response = userService.updateProfileImage(userId, imageFile);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

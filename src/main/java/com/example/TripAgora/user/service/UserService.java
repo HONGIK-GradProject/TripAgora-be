@@ -1,6 +1,7 @@
 package com.example.TripAgora.user.service;
 
 import com.example.TripAgora.auth.repository.RefreshTokenRepository;
+import com.example.TripAgora.common.image.service.ImageService;
 import com.example.TripAgora.tag.entity.Tag;
 import com.example.TripAgora.tag.entity.UserTag;
 import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
@@ -10,6 +11,7 @@ import com.example.TripAgora.tag.repository.UserTagRepository;
 import com.example.TripAgora.user.dto.request.NicknameUpdateRequest;
 import com.example.TripAgora.user.dto.response.NicknameUpdateResponse;
 import com.example.TripAgora.user.dto.request.UserTagUpdateRequest;
+import com.example.TripAgora.user.dto.response.ProfileImageUpdateResponse;
 import com.example.TripAgora.user.dto.response.UserInfoResponse;
 import com.example.TripAgora.user.dto.response.UserTagUpdateResponse;
 import com.example.TripAgora.user.entity.User;
@@ -20,6 +22,7 @@ import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final ImageService imageService;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final UserTagRepository userTagRepository;
@@ -97,5 +101,17 @@ public class UserService {
                 .collect(Collectors.toList());
 
         return new UserTagUpdateResponse(newTagIds);
+    }
+
+    @Transactional
+    public ProfileImageUpdateResponse updateProfileImage(long userId, MultipartFile imageFile) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        String oldImageUrl = user.getImageUrl();
+        String newImageUrl = imageService.updateImage(oldImageUrl, imageFile);
+
+        user.updateImageUrl(newImageUrl);
+
+        return new ProfileImageUpdateResponse(newImageUrl);
     }
 }

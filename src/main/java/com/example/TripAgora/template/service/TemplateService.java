@@ -1,6 +1,7 @@
 package com.example.TripAgora.template.service;
 
 import com.example.TripAgora.auth.exception.AccessDeniedException;
+import com.example.TripAgora.common.image.service.ImageService;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
 import com.example.TripAgora.region.entity.Region;
@@ -30,7 +31,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +41,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TemplateService {
+    private final ImageService imageService;
     private final TemplateRepository templateRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
@@ -137,19 +141,6 @@ public class TemplateService {
     }
 
     @Transactional
-    public void saveTemplate(long userId, long templateId, TemplateSaveRequest request) {
-        Template template = findTemplateAndVerifyOwner(userId, templateId);
-
-        template.updateTitle(request.title());
-        template.updateContent(request.content());
-
-        template.clearImages();
-        if (request.imageUrls() != null) {
-            request.imageUrls().forEach(template::addImage);
-        }
-    }
-
-    @Transactional
     public TemplateTitleUpdateResponse updateTitle(long userId, long templateId, TemplateTitleUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
         template.updateTitle(request.title());
@@ -166,13 +157,22 @@ public class TemplateService {
     }
 
     @Transactional
-    public void updateImages(long userId, long templateId, TemplateImageUpdateRequest request) {
+    public TemplateImageUpdateResponse updateImages(long userId, long templateId, List<MultipartFile> images) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
 
+        template.getTemplateImages().forEach(image -> imageService.deleteImage(image.getImageUrl()));
         template.clearImages();
-        if (request.imageUrls() != null) {
-            request.imageUrls().forEach(template::addImage);
+
+        List<String> newImageUrls = new ArrayList<>();
+        if (images != null && !images.isEmpty()) {
+            images.forEach(image -> {
+                String imageUrl = imageService.uploadImage(image);
+                template.addImage(imageUrl);
+                newImageUrls.add(imageUrl);
+            });
         }
+
+        return new TemplateImageUpdateResponse(newImageUrls);
     }
 
     @Transactional

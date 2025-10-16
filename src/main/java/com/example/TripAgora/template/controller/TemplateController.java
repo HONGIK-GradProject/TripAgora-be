@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/templates")
@@ -45,14 +48,6 @@ public class TemplateController {
         return ApiResponse.success(SuccessCode.CREATED, response);
     }
 
-    @PutMapping("/{templateId}")
-    public ApiResponse<Void> saveTemplate(@AuthenticationPrincipal final long userId,
-                                          @PathVariable final long templateId,
-                                          @RequestBody @Valid final TemplateSaveRequest request) {
-        templateService.saveTemplate(userId, templateId, request);
-        return ApiResponse.success(SuccessCode.OK);
-    }
-
     @PatchMapping("/{templateId}/title")
     public ApiResponse<TemplateTitleUpdateResponse> updateTitle(@AuthenticationPrincipal final long userId,
                                                                 @PathVariable final long templateId,
@@ -70,11 +65,11 @@ public class TemplateController {
     }
 
     @PatchMapping("/{templateId}/images")
-    public ApiResponse<Void> updateImages(@AuthenticationPrincipal final long userId,
-                                          @PathVariable final long templateId,
-                                          @RequestBody @Valid final TemplateImageUpdateRequest request) {
-        templateService.updateImages(userId, templateId, request);
-        return ApiResponse.success(SuccessCode.OK);
+    public ApiResponse<TemplateImageUpdateResponse> updateImages(@AuthenticationPrincipal final long userId,
+                                                                 @PathVariable final long templateId,
+                                                                 @RequestPart("images") final List<MultipartFile> images) {
+        TemplateImageUpdateResponse response = templateService.updateImages(userId, templateId, images);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 
     @PatchMapping("/{templateId}/tags")

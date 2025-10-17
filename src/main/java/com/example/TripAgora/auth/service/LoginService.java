@@ -4,6 +4,7 @@ import com.example.TripAgora.auth.dto.*;
 import com.example.TripAgora.auth.exception.SocialAccessTokenInvalidException;
 import com.example.TripAgora.auth.exception.SocialJsonParseErrorException;
 import com.example.TripAgora.auth.util.JWTUtil;
+import com.example.TripAgora.common.image.service.ImageService;
 import com.example.TripAgora.user.entity.SocialType;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.repository.UserRepository;
@@ -25,10 +26,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
-    private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
+    private final ImageService imageService;
     private final JWTService jwtService;
     private final JWTUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final String KAKAO_USERINFO_URL = "https://kapi.kakao.com/v2/user/me";
@@ -102,10 +104,12 @@ public class LoginService {
             isNewUser.set(false);
             return userOpt.get();
         } else {
+            String s3ImageUrl = imageService.uploadImageFromUrl(profileImageUrl);
+
             User newUser = User.builder()
                     .socialId(socialId)
                     .socialType(type)
-                    .imageUrl(profileImageUrl)
+                    .imageUrl(s3ImageUrl)
                     .build();
             isNewUser.set(true);
 

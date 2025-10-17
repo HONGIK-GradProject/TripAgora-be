@@ -15,6 +15,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -49,6 +51,25 @@ public class ImageService {
 
         // 4. 업로드된 이미지의 URL 반환
         return amazonS3.getUrl(bucketName, fileName).toString();
+    }
+
+    public String uploadImageFromUrl(String imageUrl) {
+        if (!StringUtils.hasText(imageUrl)) {
+            return null;
+        }
+
+        String fileName = createStoreFileName(UUID.randomUUID() + ".jpg");
+
+        try (InputStream inputStream = new URL(imageUrl).openStream()) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("image/jpeg");
+
+            amazonS3.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata));
+            return amazonS3.getUrl(bucketName, fileName).toString();
+
+        } catch (IOException e) {
+            throw new ImageUploadFailedException();
+        }
     }
 
     public String updateImage(String oldImageUrl, MultipartFile newFile) {
@@ -87,13 +108,11 @@ public class ImageService {
         }
     }
 
-    // 저장될 파일명 생성 (UUID + 확장자)
     private String createStoreFileName(String originalFilename) {
         String uuid = UUID.randomUUID().toString();
         return FOLDER_NAME + uuid + ".jpg";
     }
 
-    // URL에서 파일명(객체 키) 추출
     private String extractFileNameFromUrl(String imageUrl) {
         try {
             String bucketUrl = "https://" + bucketName + ".s3.";

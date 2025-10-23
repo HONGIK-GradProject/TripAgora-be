@@ -1,6 +1,9 @@
 package com.example.TripAgora.session.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
+import com.example.TripAgora.participation.entity.Participation;
+import com.example.TripAgora.room.entity.Room;
+import com.example.TripAgora.session.exception.SessionFullException;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.entity.TemplateItinerary;
 import jakarta.persistence.*;
@@ -46,6 +49,12 @@ public class Session extends BaseEntity {
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionItinerary> sessionItineraries = new ArrayList<>();
 
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participation> participations = new ArrayList<>();
+
+    @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Room room;
+
     @Builder
     private Session(Template template, Integer maxParticipants, LocalDate startDate) {
         this.template = template;
@@ -59,6 +68,14 @@ public class Session extends BaseEntity {
         this.sessionItineraries.add(itinerary);
     }
 
+    public void addParticipation(Participation participation) {
+        this.participations.add(participation);
+    }
+
+    public void assignRoom(Room room) {
+        this.room = room;
+    }
+
     public void updateInfo(Integer maxParticipants, LocalDate startDate) {
         this.maxParticipants = maxParticipants;
         this.startDate = startDate;
@@ -70,22 +87,18 @@ public class Session extends BaseEntity {
         this.status = newStatus;
     }
 
-    // TODO: 추후 여행 참여 로직 작성 시 수정
     public void increaseParticipant() {
         if (this.currentParticipants >= this.maxParticipants) {
-            throw new IllegalStateException("모집 정원이 가득 찼습니다.");
+            throw new SessionFullException();
         }
 
         this.currentParticipants++;
     }
 
-    // TODO: 추후 여행 참여 로직 작성 시 수정
     public void decreaseParticipant() {
-        if (this.currentParticipants <= 0) {
-            throw new IllegalStateException("현재 참가자가 없습니다.");
+        if (this.currentParticipants > 0) {
+            this.currentParticipants--;
         }
-
-        this.currentParticipants--;
     }
 
     public static LocalDate calculateEndDate(Template template, LocalDate startDate) {

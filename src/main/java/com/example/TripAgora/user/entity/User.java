@@ -57,10 +57,6 @@ public class User extends BaseEntity {
         this.role = Role.TRAVELER;
     }
 
-    public enum Role {
-        TRAVELER, GUIDE, ADMIN
-    }
-
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }

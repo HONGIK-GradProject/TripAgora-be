@@ -2,6 +2,7 @@ package com.example.TripAgora.session.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.participation.entity.Participation;
+import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.session.exception.SessionFullException;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.entity.TemplateItinerary;
@@ -51,6 +52,9 @@ public class Session extends BaseEntity {
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participation> participations = new ArrayList<>();
 
+    @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Room room;
+
     @Builder
     private Session(Template template, Integer maxParticipants, LocalDate startDate) {
         this.template = template;
@@ -62,6 +66,14 @@ public class Session extends BaseEntity {
 
     public void addItinerary(SessionItinerary itinerary) {
         this.sessionItineraries.add(itinerary);
+    }
+
+    public void addParticipation(Participation participation) {
+        this.participations.add(participation);
+    }
+
+    public void assignRoom(Room room) {
+        this.room = room;
     }
 
     public void updateInfo(Integer maxParticipants, LocalDate startDate) {

@@ -67,4 +67,11 @@ public class SessionController {
         SessionListResponse response = sessionService.getMySessions(userId, statuses, pageable);
         return ApiResponse.success(SuccessCode.OK, response);
     }
+
+    @PostMapping("/{sessionId}/close")
+    public ApiResponse<Void> closeRecruitment(@AuthenticationPrincipal final long userId,
+                                              @PathVariable final long sessionId) {
+        sessionService.closeRecruitment(userId, sessionId);
+        return ApiResponse.success(SuccessCode.OK);
+    }
 }

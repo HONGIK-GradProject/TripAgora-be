@@ -3,6 +3,10 @@ package com.example.TripAgora.session.service;
 import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
+import com.example.TripAgora.participation.entity.Participation;
+import com.example.TripAgora.participation.repository.ParticipationRepository;
+import com.example.TripAgora.room.entity.Room;
+import com.example.TripAgora.room.repository.RoomRepository;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.*;
@@ -16,6 +20,7 @@ import com.example.TripAgora.session.exception.SessionNotRecruitingException;
 import com.example.TripAgora.session.repository.SessionRepository;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.service.TemplateService;
+import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
@@ -35,9 +40,12 @@ public class SessionService {
     private final TemplateService templateService;
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
+    private final ParticipationRepository participationRepository;
+    private final RoomRepository roomRepository;
 
     @Transactional
     public SessionCreateResponse createSession(long userId, SessionCreateRequest request) {
+        User guide = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Template template = templateService.findTemplateAndVerifyOwner(userId, request.templateId());
 
         LocalDate endDate = Session.calculateEndDate(template, request.startDate());
@@ -68,6 +76,14 @@ public class SessionService {
         sessionItineraries.forEach(session::addItinerary);
 
         Session savedSession = sessionRepository.save(session);
+
+        Participation guideParticipation = Participation.builder()
+                .user(guide)
+                .session(session)
+                .role(Role.GUIDE)
+                .build();
+
+        session.addParticipation(guideParticipation);
 
         return new SessionCreateResponse(savedSession.getId());
     }
@@ -167,6 +183,23 @@ public class SessionService {
                 .toList();
 
         return new SessionItinerariesResponse(itineraries);
+    }
+
+    @Transactional
+    public void closeRecruitment(Long userId, Long sessionId) {
+        Session session = findSessionAndVerifyOwner(userId, sessionId);
+
+        if (session.getStatus() != SessionStatus.RECRUITING) {
+            throw new SessionNotRecruitingException();
+        }
+
+        Room room = Room.builder()
+                .session(session)
+                .build();
+        Room savedRoom = roomRepository.save(room);
+        session.assignRoom(room);
+
+        session.updateStatus(SessionStatus.RECRUITMENT_CLOSED);
     }
 
     private Session findSessionAndVerifyOwner(long userId, long sessionId) {

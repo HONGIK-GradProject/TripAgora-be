@@ -11,6 +11,7 @@ import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.exception.SessionNotFoundException;
 import com.example.TripAgora.session.exception.SessionNotRecruitingException;
 import com.example.TripAgora.session.repository.SessionRepository;
+import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
@@ -45,11 +46,14 @@ public class ParticipationService {
         Participation participation = Participation.builder()
                 .user(user)
                 .session(session)
+                .role(Role.TRAVELER)
                 .build();
-        Participation savedParticipation = participationRepository.save(participation);
+
+        participationRepository.save(participation);
+        session.addParticipation(participation);
 
         return new ParticipationResponse(
-                savedParticipation.getId(),
+                participation.getId(),
                 session.getId(),
                 session.getCurrentParticipants()
         );

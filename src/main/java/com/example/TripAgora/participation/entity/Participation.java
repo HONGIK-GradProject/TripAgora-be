@@ -2,6 +2,7 @@ package com.example.TripAgora.participation.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.session.entity.Session;
+import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,9 +27,14 @@ public class Participation extends BaseEntity {
     @JoinColumn(name = "session_id")
     private Session session;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Builder
-    public Participation(User user, Session session) {
+    public Participation(User user, Session session, Role role) {
         this.user = user;
         this.session = session;
+        this.role = role;
     }
 }

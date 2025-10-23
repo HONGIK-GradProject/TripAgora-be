@@ -8,6 +8,7 @@ import com.example.TripAgora.guideProfile.exception.AlreadyTravelerException;
 import com.example.TripAgora.guideProfile.repository.GuideProfileRepository;
 import com.example.TripAgora.user.dto.response.GuideSwitchResponse;
 import com.example.TripAgora.user.dto.response.TravelerSwitchResponse;
+import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
@@ -26,7 +27,7 @@ public class GuideProfileService {
     public GuideSwitchResponse switchToGuide(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        if (user.getRole() == User.Role.GUIDE) {
+        if (user.getRole() == Role.GUIDE) {
             throw new AlreadyGuideException();
         }
 
@@ -40,7 +41,7 @@ public class GuideProfileService {
             profile = user.getGuideProfile();
         }
 
-        user.updateRole(User.Role.GUIDE);
+        user.updateRole(Role.GUIDE);
 
         ReissueResponse tokenResponse = jwtService.issueTokensForUser(user);
         return new GuideSwitchResponse(tokenResponse.accessToken(), tokenResponse.refreshToken(), profile.getId());
@@ -51,11 +52,11 @@ public class GuideProfileService {
     public TravelerSwitchResponse switchToTraveler(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        if (user.getRole() == User.Role.TRAVELER) {
+        if (user.getRole() == Role.TRAVELER) {
             throw new AlreadyTravelerException();
         }
 
-        user.updateRole(User.Role.TRAVELER);
+        user.updateRole(Role.TRAVELER);
         ReissueResponse tokenResponse = jwtService.issueTokensForUser(user);
         return new TravelerSwitchResponse(tokenResponse.accessToken(), tokenResponse.refreshToken(), user.getId());
         // TODO: 여행객용 홈화면 확정 후 수정

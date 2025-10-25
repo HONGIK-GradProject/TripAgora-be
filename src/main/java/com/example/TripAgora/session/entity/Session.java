@@ -50,7 +50,7 @@ public class Session extends BaseEntity {
     private List<SessionItinerary> sessionItineraries = new ArrayList<>();
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participation> participations = new ArrayList<>();
+    private List<Participation> participants = new ArrayList<>();
 
     @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private Room room;
@@ -69,7 +69,7 @@ public class Session extends BaseEntity {
     }
 
     public void addParticipation(Participation participation) {
-        this.participations.add(participation);
+        this.participants.add(participation);
     }
 
     public void assignRoom(Room room) {

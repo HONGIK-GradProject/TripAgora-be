@@ -32,6 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/guides/**", "api/templates/**").hasRole("GUIDE")
                         .requestMatchers(HttpMethod.GET, "/api/sessions/**").authenticated()
                         .requestMatchers("/api/sessions/**").hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/{roomId}/notices/**").authenticated()
+                        .requestMatchers("/api/rooms/{roomId}/notices/**").hasRole("GUIDE")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

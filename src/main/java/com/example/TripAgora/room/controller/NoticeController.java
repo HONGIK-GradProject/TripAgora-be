@@ -34,4 +34,11 @@ public class NoticeController {
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
+    @DeleteMapping("/{noticeId}")
+    public ApiResponse<Void> deleteNotice(@AuthenticationPrincipal final long userId,
+                                          @PathVariable final long roomId,
+                                          @PathVariable final long noticeId) {
+        noticeService.deleteNotice(userId, roomId, noticeId);
+        return ApiResponse.success(SuccessCode.OK);
+    }
 }

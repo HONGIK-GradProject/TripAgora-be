@@ -42,6 +42,13 @@ public class NoticeService {
         return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getContent());
     }
 
+    @Transactional
+    public void deleteNotice(Long userId, Long roomId, Long noticeId) {
+        roomService.checkRoomAndGuide(userId, roomId);
+        Notice notice = checkNoticeAndRoom(noticeId, roomId);
+
+        noticeRepository.delete(notice);
+    }
 
     private Notice checkNoticeAndRoom(Long noticeId, Long roomId) {
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(NoticeNotFoundException::new);

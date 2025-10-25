@@ -3,6 +3,7 @@ package com.example.TripAgora.room.controller;
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.room.dto.request.NoticeCreateRequest;
+import com.example.TripAgora.room.dto.request.NoticeUpdateRequest;
 import com.example.TripAgora.room.dto.response.NoticeResponse;
 import com.example.TripAgora.room.service.NoticeService;
 import jakarta.validation.Valid;
@@ -23,4 +24,14 @@ public class NoticeController {
         NoticeResponse response = noticeService.createNotice(userId, roomId, request);
         return ApiResponse.success(SuccessCode.CREATED, response);
     }
+
+    @PatchMapping("/{noticeId}")
+    public ApiResponse<NoticeResponse> updateNotice(@AuthenticationPrincipal final long userId,
+                                                    @PathVariable final long roomId,
+                                                    @PathVariable final long noticeId,
+                                                    @RequestBody @Valid final NoticeUpdateRequest request) {
+        NoticeResponse response = noticeService.updateNotice(userId, roomId, noticeId, request);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
 }

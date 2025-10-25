@@ -25,6 +25,14 @@ public class NoticeController {
         return ApiResponse.success(SuccessCode.CREATED, response);
     }
 
+    @GetMapping("/{noticeId}")
+    public ApiResponse<NoticeResponse> getNotice(@AuthenticationPrincipal final long userId,
+                                                 @PathVariable final long roomId,
+                                                 @PathVariable final long noticeId) {
+        NoticeResponse response = noticeService.getNotice(userId, roomId, noticeId);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
     @PatchMapping("/{noticeId}")
     public ApiResponse<NoticeResponse> updateNotice(@AuthenticationPrincipal final long userId,
                                                     @PathVariable final long roomId,

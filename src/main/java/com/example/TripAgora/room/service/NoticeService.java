@@ -32,8 +32,16 @@ public class NoticeService {
         return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getContent());
     }
 
+    @Transactional(readOnly = true)
+    public NoticeResponse getNotice(long userId, long roomId, long noticeId) {
+        roomService.checkRoomAndParticipant(userId, roomId);
+        Notice notice = checkNoticeAndRoom(noticeId, roomId);
+
+        return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getContent());
+    }
+
     @Transactional
-    public NoticeResponse updateNotice(Long userId, Long roomId, Long noticeId, NoticeUpdateRequest request) {
+    public NoticeResponse updateNotice(long userId, long roomId, long noticeId, NoticeUpdateRequest request) {
         roomService.checkRoomAndGuide(userId, roomId);
         Notice notice = checkNoticeAndRoom(noticeId, roomId);
 
@@ -43,14 +51,14 @@ public class NoticeService {
     }
 
     @Transactional
-    public void deleteNotice(Long userId, Long roomId, Long noticeId) {
+    public void deleteNotice(long userId, long roomId, long noticeId) {
         roomService.checkRoomAndGuide(userId, roomId);
         Notice notice = checkNoticeAndRoom(noticeId, roomId);
 
         noticeRepository.delete(notice);
     }
 
-    private Notice checkNoticeAndRoom(Long noticeId, Long roomId) {
+    private Notice checkNoticeAndRoom(long noticeId, long roomId) {
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(NoticeNotFoundException::new);
 
         if (!notice.getRoom().getId().equals(roomId)) {

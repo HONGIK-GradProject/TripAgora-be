@@ -4,10 +4,13 @@ import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.room.dto.request.NoticeCreateRequest;
 import com.example.TripAgora.room.dto.request.NoticeUpdateRequest;
+import com.example.TripAgora.room.dto.response.NoticeListResponse;
 import com.example.TripAgora.room.dto.response.NoticeResponse;
 import com.example.TripAgora.room.service.NoticeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +33,14 @@ public class NoticeController {
                                                  @PathVariable final long roomId,
                                                  @PathVariable final long noticeId) {
         NoticeResponse response = noticeService.getNotice(userId, roomId, noticeId);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @GetMapping
+    public ApiResponse<NoticeListResponse> getNotices(@AuthenticationPrincipal final long userId,
+                                                      @PathVariable final long roomId,
+                                                      @PageableDefault(size = 10) Pageable pageable) {
+        NoticeListResponse response = noticeService.getNotices(userId, roomId, pageable);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

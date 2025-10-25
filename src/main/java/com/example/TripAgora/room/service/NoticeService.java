@@ -3,14 +3,20 @@ package com.example.TripAgora.room.service;
 import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.room.dto.request.NoticeCreateRequest;
 import com.example.TripAgora.room.dto.request.NoticeUpdateRequest;
+import com.example.TripAgora.room.dto.response.NoticeListResponse;
 import com.example.TripAgora.room.dto.response.NoticeResponse;
+import com.example.TripAgora.room.dto.response.NoticeSummaryResponse;
 import com.example.TripAgora.room.entity.Notice;
 import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.room.exception.NoticeNotFoundException;
 import com.example.TripAgora.room.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +35,12 @@ public class NoticeService {
                 .build();
         Notice savedNotice = noticeRepository.save(notice);
 
-        return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getContent());
+        return new NoticeResponse(
+                savedNotice.getId(),
+                savedNotice.getTitle(),
+                savedNotice.getContent(),
+                savedNotice.getCreatedAt()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -37,7 +48,29 @@ public class NoticeService {
         roomService.checkRoomAndParticipant(userId, roomId);
         Notice notice = checkNoticeAndRoom(noticeId, roomId);
 
-        return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getContent());
+        return new NoticeResponse(
+                notice.getId(),
+                notice.getTitle(),
+                notice.getContent(),
+                notice.getCreatedAt()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public NoticeListResponse getNotices(long userId, long roomId, Pageable pageable) {
+        Room room = roomService.checkRoomAndParticipant(userId, roomId);
+
+        Slice<Notice> noticeSlice = noticeRepository.findByRoomOrderByIdDesc(room, pageable);
+
+        List<NoticeSummaryResponse> summaries = noticeSlice.getContent().stream()
+                .map(notice -> new NoticeSummaryResponse(
+                        notice.getId(),
+                        notice.getTitle(),
+                        notice.getCreatedAt()
+                ))
+                .toList();
+
+        return new NoticeListResponse(summaries, noticeSlice.hasNext());
     }
 
     @Transactional
@@ -47,7 +80,12 @@ public class NoticeService {
 
         notice.update(request.title(), request.content());
 
-        return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getContent());
+        return new NoticeResponse(
+                notice.getId(),
+                notice.getTitle(),
+                notice.getContent(),
+                notice.getCreatedAt()
+        );
     }
 
     @Transactional

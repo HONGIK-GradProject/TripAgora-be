@@ -25,6 +25,14 @@ import java.util.List;
 public class SessionController {
     private final SessionService sessionService;
 
+    @GetMapping
+    public ApiResponse<SessionListResponse> getSessions(@AuthenticationPrincipal final long userId,
+                                                        @RequestParam(required = false) List<SessionStatus> statuses,
+                                                        @PageableDefault(size = 10) Pageable pageable) {
+        SessionListResponse response = sessionService.getSessions(userId, statuses, pageable);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
     @PostMapping
     public ApiResponse<SessionCreateResponse> createSession(@AuthenticationPrincipal final long userId,
                                                             @RequestBody @Valid final SessionCreateRequest request) {

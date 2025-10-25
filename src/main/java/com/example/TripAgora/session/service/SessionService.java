@@ -157,6 +157,42 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
+    public SessionListResponse getSessions(long userId, List<SessionStatus> statuses, Pageable pageable) {
+        Slice<Session> sessionSlice;
+
+        if (statuses == null || statuses.isEmpty()) {
+            sessionSlice = sessionRepository.findAll(pageable);
+        } else {
+            sessionSlice = sessionRepository.findByStatusIn(statuses, pageable);
+        }
+
+        List<SessionSummaryResponse> summaries = sessionSlice.getContent().stream()
+                .map(session -> {
+                    Template template = session.getTemplate();
+                    String imageUrl = template.getTemplateImages().isEmpty() ? null : template.getTemplateImages().get(0).getImageUrl();
+
+                    List<String> regions = template.getTemplateRegions().stream()
+                            .map(tr -> tr.getRegion().getName())
+                            .toList();
+
+                    return new SessionSummaryResponse(
+                            session.getId(),
+                            template.getTitle(),
+                            imageUrl,
+                            regions,
+                            session.getMaxParticipants(),
+                            session.getCurrentParticipants(),
+                            session.getStartDate(),
+                            session.getEndDate(),
+                            session.getStatus().name()
+                    );
+                })
+                .toList();
+
+        return new SessionListResponse(summaries, sessionSlice.hasNext());
+    }
+
+    @Transactional(readOnly = true)
     public SessionListResponse getMySessions(long userId, List<SessionStatus> statuses, Pageable pageable) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         GuideProfile guideProfile = user.getGuideProfile();

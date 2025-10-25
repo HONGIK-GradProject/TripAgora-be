@@ -23,16 +23,12 @@ public class Room extends BaseEntity {
     @JoinColumn(name = "session_id")
     private Session session;
 
-//    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("id desc")
-//    private List<Notice> notices = new ArrayList<>();
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id desc")
+    private List<Notice> notices = new ArrayList<>();
 
     @Builder
     public Room(Session session) {
         this.session = session;
     }
-
-//    public void addNotice(Notice notice) {
-//        this.notices.add(notice);
-//    }
 }

@@ -76,6 +76,14 @@ public class SessionController {
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
+    @GetMapping("/participating")
+    public ApiResponse<SessionListResponse> getParticipatingSessions(@AuthenticationPrincipal final long userId,
+                                                                     @RequestParam(required = false) List<SessionStatus> statuses,
+                                                                     @PageableDefault(size = 10) Pageable pageable) {
+        SessionListResponse response = sessionService.getParticipatingSessions(userId, statuses, pageable);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
     @PostMapping("/{sessionId}/close")
     public ApiResponse<Void> closeRecruitment(@AuthenticationPrincipal final long userId,
                                               @PathVariable final long sessionId) {

@@ -166,30 +166,7 @@ public class SessionService {
             sessionSlice = sessionRepository.findByStatusIn(statuses, pageable);
         }
 
-        List<SessionSummaryResponse> summaries = sessionSlice.getContent().stream()
-                .map(session -> {
-                    Template template = session.getTemplate();
-                    String imageUrl = template.getTemplateImages().isEmpty() ? null : template.getTemplateImages().get(0).getImageUrl();
-
-                    List<String> regions = template.getTemplateRegions().stream()
-                            .map(tr -> tr.getRegion().getName())
-                            .toList();
-
-                    return new SessionSummaryResponse(
-                            session.getId(),
-                            template.getTitle(),
-                            imageUrl,
-                            regions,
-                            session.getMaxParticipants(),
-                            session.getCurrentParticipants(),
-                            session.getStartDate(),
-                            session.getEndDate(),
-                            session.getStatus().name()
-                    );
-                })
-                .toList();
-
-        return new SessionListResponse(summaries, sessionSlice.hasNext());
+        return convertToSessionListResponse(sessionSlice);
     }
 
     @Transactional(readOnly = true)
@@ -200,7 +177,25 @@ public class SessionService {
             throw new GuideProfileNotFoundException();
         }
 
-        return getSessionsByGuideProfile(guideProfile, statuses, pageable);
+        Slice<Session> sessionSlice = sessionRepository.findByTemplate_GuideProfileAndStatusIn(guideProfile, statuses, pageable);
+
+        return convertToSessionListResponse(sessionSlice);
+    }
+
+    @Transactional(readOnly = true)
+    public SessionListResponse getParticipatingSessions(long userId, List<SessionStatus> statuses, Pageable pageable) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Slice<Participation> participationSlice;
+        if (statuses == null || statuses.isEmpty()) {
+            participationSlice = participationRepository.findByUserAndRole(user, Role.TRAVELER, pageable);
+        } else {
+            participationSlice = participationRepository.findByUserAndRoleAndSession_StatusIn(user, Role.TRAVELER, statuses, pageable);
+        }
+
+        Slice<Session> sessionSlice = participationSlice.map(Participation::getSession);
+
+        return convertToSessionListResponse(sessionSlice);
     }
 
     @Transactional(readOnly = true)
@@ -248,9 +243,7 @@ public class SessionService {
         return session;
     }
 
-    private SessionListResponse getSessionsByGuideProfile(GuideProfile guideProfile, List<SessionStatus> statuses, Pageable pageable) {
-        Slice<Session> sessionSlice = sessionRepository.findByTemplate_GuideProfileAndStatusIn(guideProfile, statuses, pageable);
-
+    private SessionListResponse convertToSessionListResponse(Slice<Session> sessionSlice) {
         List<SessionSummaryResponse> summaries = sessionSlice.getContent().stream()
                 .map(session -> {
                     Template template = session.getTemplate();

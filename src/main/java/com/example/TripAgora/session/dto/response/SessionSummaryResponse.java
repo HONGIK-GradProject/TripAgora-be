@@ -9,7 +9,7 @@ public record SessionSummaryResponse(
         Long sessionId,
         String title,
         String firstImageUrl,
-        List<String> regionNames,
+        List<Long> regionIds,
         Integer maxParticipants,
         Integer currentParticipants,
         @JsonFormat(pattern = "yyyy-MM-dd")

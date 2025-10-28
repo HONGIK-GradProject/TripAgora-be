@@ -265,8 +265,8 @@ public class SessionService {
                     Template template = session.getTemplate();
                     String imageUrl = template.getTemplateImages().isEmpty() ? null : template.getTemplateImages().get(0).getImageUrl();
 
-                    List<String> regions = template.getTemplateRegions().stream()
-                            .map(tr -> tr.getRegion().getName())
+                    List<Long> regions = template.getTemplateRegions().stream()
+                            .map(tr -> tr.getRegion().getId())
                             .toList();
 
                     return new SessionSummaryResponse(

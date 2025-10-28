@@ -41,8 +41,9 @@ public class SessionController {
     }
 
     @GetMapping("/{sessionId}")
-    public ApiResponse<SessionDetailResponse> getSessionDetails(@PathVariable final long sessionId) {
-        SessionDetailResponse response = sessionService.getSessionDetails(sessionId);
+    public ApiResponse<SessionDetailResponse> getSessionDetails(@AuthenticationPrincipal final long userId,
+                                                                @PathVariable final long sessionId) {
+        SessionDetailResponse response = sessionService.getSessionDetails(userId, sessionId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

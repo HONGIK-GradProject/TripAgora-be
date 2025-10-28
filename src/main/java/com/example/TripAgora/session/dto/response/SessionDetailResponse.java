@@ -18,4 +18,7 @@ public record SessionDetailResponse(
         LocalDate startDate,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate endDate,
-        String status) {}
+        String status,
+
+        List<SessionParticipantResponse> participants,
+        boolean isParticipating) {}

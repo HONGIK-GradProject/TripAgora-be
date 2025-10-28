@@ -89,11 +89,10 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
-    public SessionDetailResponse getSessionDetails(long sessionId) {
+    public SessionDetailResponse getSessionDetails(long userId, long sessionId) {
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
         Template template = session.getTemplate();
-
         List<Long> regions = template.getTemplateRegions().stream()
                 .map(templateRegion -> templateRegion.getRegion().getId())
                 .collect(Collectors.toList());
@@ -106,6 +105,21 @@ public class SessionService {
                 .map(image -> image.getImageUrl())
                 .collect(Collectors.toList());
 
+        List<SessionParticipantResponse> participants = session.getParticipants().stream()
+                .map(participation -> {
+                    User user = participation.getUser();
+
+                    return new SessionParticipantResponse(
+                            user.getId(),
+                            user.getNickname(),
+                            user.getImageUrl(),
+                            participation.getRole().name()
+                    );
+                })
+                .toList();
+
+        boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
+
         return new SessionDetailResponse(
                 template.getTitle(),
                 template.getContent(),
@@ -116,7 +130,9 @@ public class SessionService {
                 session.getCurrentParticipants(),
                 session.getStartDate(),
                 session.getEndDate(),
-                session.getStatus().name()
+                session.getStatus().name(),
+                participants,
+                isParticipating
         );
     }
 

@@ -25,16 +25,16 @@ public class GuideProfile extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "bio", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "image_url")
+    @Column
     private String imageUrl;
 
-    @Column(name = "total_avg_rating")
+    @Column
     private Double totalAvgRating = 0.0;
 
-    @Column(name = "total_review_count")
+    @Column
     private Integer totalReviewCount = 0;
 
     @OneToMany(mappedBy = "guideProfile", cascade = CascadeType.ALL, orphanRemoval = true)

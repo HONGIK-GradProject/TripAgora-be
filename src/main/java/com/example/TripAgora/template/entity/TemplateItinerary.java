@@ -22,23 +22,23 @@ public class TemplateItinerary extends BaseEntity {
     @JoinColumn(name = "template_id", nullable = false)
     private Template template;
 
-    @Column(name = "day", nullable = false)
+    @Column(nullable = false)
     private Integer day;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "start_time", nullable = false)
+    @Column(nullable = false)
     private LocalTime startTime;
 
-    @Column(name = "latitude", nullable = false)
-    private Double latitude;  // 위도
+    @Column(nullable = false)
+    private Double latitude;
 
-    @Column(name = "longitude", nullable = false)
-    private Double longitude; // 경도
+    @Column(nullable = false)
+    private Double longitude;
 
     @Builder
     private TemplateItinerary(Template template, Integer day, String title, String content, LocalTime startTime, Double latitude, Double longitude) {

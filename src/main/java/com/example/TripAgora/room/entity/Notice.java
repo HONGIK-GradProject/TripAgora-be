@@ -19,10 +19,10 @@ public class Notice extends BaseEntity {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Builder

@@ -26,21 +26,21 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "social_id", nullable = false)
+    @Column(nullable = false)
     private String socialId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "social_type", nullable = false)
+    @Column(nullable = false)
     private SocialType socialType;
 
-    @Column(name = "nickname", unique = true)
+    @Column(unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column
     private Role role;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(nullable = false)
     private String imageUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

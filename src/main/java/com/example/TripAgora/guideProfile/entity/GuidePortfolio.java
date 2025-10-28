@@ -20,10 +20,10 @@ public class GuidePortfolio {
     private GuideProfile guideProfile;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     private PortfolioType type;
 
-    @Column(name = "url", nullable = false)
+    @Column(nullable = false)
     private String url;
 
     @Builder

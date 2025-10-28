@@ -16,10 +16,10 @@ public class Region {
     @Id
     private Long id;
 
-    @Column(name = "region_name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "level", nullable = false)
+    @Column(nullable = false)
     private int level;
 
     @ManyToOne(fetch = FetchType.LAZY)

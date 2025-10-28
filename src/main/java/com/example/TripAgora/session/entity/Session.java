@@ -27,7 +27,7 @@ public class Session extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "template_id", nullable = false)
-    private Template template; // 원본이 된 템플릿
+    private Template template;
 
     @Column(nullable = false)
     private Integer maxParticipants;

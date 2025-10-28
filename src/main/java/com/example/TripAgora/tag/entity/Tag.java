@@ -16,7 +16,7 @@ public class Tag {
     @Id
     private Long id;
 
-    @Column(name = "tag_name", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)

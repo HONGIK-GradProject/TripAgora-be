@@ -20,10 +20,10 @@ public class TemplateImage extends BaseEntity {
     @JoinColumn(name = "template_id", nullable = false)
     private Template template;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(nullable = false)
     private String imageUrl;
 
-    @Column(name = "display_order")
+    @Column
     private int displayOrder;
 
     @Builder

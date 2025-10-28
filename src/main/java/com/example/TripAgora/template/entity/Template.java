@@ -27,16 +27,16 @@ public class Template extends BaseEntity {
     @JoinColumn(name = "guide_profile_id", nullable = false)
     private GuideProfile guideProfile;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
-    @Column(name = "total_avg_rating")
+    @Column
     private Double totalAvgRating = 0.0;
 
-    @Column(name = "total_review_count")
+    @Column
     private Integer totalReviewCount = 0;
 
     @OrderBy("day ASC , startTime ASC ")

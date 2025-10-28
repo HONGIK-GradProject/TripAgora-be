@@ -20,7 +20,7 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "token", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String token;
 
     @Builder

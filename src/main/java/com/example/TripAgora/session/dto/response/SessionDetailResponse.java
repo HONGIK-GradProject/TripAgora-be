@@ -21,4 +21,5 @@ public record SessionDetailResponse(
         String status,
 
         List<SessionParticipantResponse> participants,
-        boolean isParticipating) {}
+        boolean isParticipating,
+        boolean isMySession) {}

@@ -3,6 +3,7 @@ package com.example.TripAgora.template.entity;
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.region.entity.TemplateRegion;
+import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.tag.entity.TemplateTag;
 import com.example.TripAgora.template.dto.request.ItineraryItemRequest;
 import jakarta.persistence.*;
@@ -34,10 +35,10 @@ public class Template extends BaseEntity {
     private String content;
 
     @Column
-    private Double totalAvgRating = 0.0;
+    private Double avgRating = 0.0;
 
     @Column
-    private Integer totalReviewCount = 0;
+    private Integer reviewCount = 0;
 
     @OrderBy("day ASC , startTime ASC ")
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,6 +52,9 @@ public class Template extends BaseEntity {
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TemplateRegion> templateRegions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Session> sessions = new ArrayList<>();
 
     @Builder
     private Template(GuideProfile guideProfile, String title, String content) {

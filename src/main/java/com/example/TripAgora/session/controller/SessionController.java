@@ -58,7 +58,7 @@ public class SessionController {
     @GetMapping("/{sessionId}/itineraries")
     public ApiResponse<SessionItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
                                                                    @PathVariable final long sessionId) {
-        SessionItinerariesResponse response = sessionService.getItineraries(userId, sessionId);
+        SessionItinerariesResponse response = sessionService.getItineraries(sessionId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

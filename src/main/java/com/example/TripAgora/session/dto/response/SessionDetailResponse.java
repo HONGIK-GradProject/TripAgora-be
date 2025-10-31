@@ -22,4 +22,5 @@ public record SessionDetailResponse(
 
         List<SessionParticipantResponse> participants,
         boolean isParticipating,
-        boolean isMySession) {}
+        boolean isMySession,
+        boolean isInWishlist) {}

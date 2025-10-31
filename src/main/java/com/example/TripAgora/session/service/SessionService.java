@@ -8,6 +8,7 @@ import com.example.TripAgora.participation.repository.ParticipationRepository;
 import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.room.repository.RoomRepository;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
+import com.example.TripAgora.session.dto.request.SessionSearchRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.*;
 import com.example.TripAgora.session.entity.Session;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,6 +121,7 @@ public class SessionService {
                 .toList();
 
         boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
+        boolean isMySession = Objects.equals(session.getTemplate().getGuideProfile().getUser().getId(), userId);
 
         return new SessionDetailResponse(
                 template.getTitle(),
@@ -132,7 +135,8 @@ public class SessionService {
                 session.getEndDate(),
                 session.getStatus().name(),
                 participants,
-                isParticipating
+                isParticipating,
+                isMySession
         );
     }
 
@@ -247,6 +251,13 @@ public class SessionService {
         session.assignRoom(room);
 
         session.updateStatus(SessionStatus.RECRUITMENT_CLOSED);
+    }
+
+    @Transactional(readOnly = true)
+    public SessionListResponse searchSessions(SessionSearchRequest request, Pageable pageable) {
+        Slice<Session> sessionSlice = sessionRepository.search(request, pageable);
+
+        return convertToSessionListResponse(sessionSlice);
     }
 
     private Session findSessionAndVerifyOwner(long userId, long sessionId) {

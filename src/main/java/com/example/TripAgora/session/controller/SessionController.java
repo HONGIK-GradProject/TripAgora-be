@@ -3,6 +3,7 @@ package com.example.TripAgora.session.controller;
 import com.example.TripAgora.common.code.SuccessCode;
 import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
+import com.example.TripAgora.session.dto.request.SessionSearchRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
@@ -24,14 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SessionController {
     private final SessionService sessionService;
-
-    @GetMapping
-    public ApiResponse<SessionListResponse> getSessions(@AuthenticationPrincipal final long userId,
-                                                        @RequestParam(required = false) List<SessionStatus> statuses,
-                                                        @PageableDefault(size = 10) Pageable pageable) {
-        SessionListResponse response = sessionService.getSessions(userId, statuses, pageable);
-        return ApiResponse.success(SuccessCode.OK, response);
-    }
 
     @PostMapping
     public ApiResponse<SessionCreateResponse> createSession(@AuthenticationPrincipal final long userId,
@@ -90,5 +83,12 @@ public class SessionController {
                                               @PathVariable final long sessionId) {
         sessionService.closeRecruitment(userId, sessionId);
         return ApiResponse.success(SuccessCode.OK);
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<SessionListResponse> searchSessions(@ModelAttribute SessionSearchRequest request,
+                                                           @PageableDefault(size = 10) Pageable pageable) {
+        SessionListResponse response = sessionService.searchSessions(request, pageable);
+        return ApiResponse.success(SuccessCode.OK, response);
     }
 }

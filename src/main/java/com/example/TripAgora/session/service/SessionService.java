@@ -25,6 +25,7 @@ import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
+import com.example.TripAgora.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -44,6 +45,7 @@ public class SessionService {
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
     private final RoomRepository roomRepository;
+    private final WishlistRepository wishlistRepository;
 
     @Transactional
     public SessionCreateResponse createSession(long userId, SessionCreateRequest request) {
@@ -122,6 +124,7 @@ public class SessionService {
 
         boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
         boolean isMySession = Objects.equals(session.getTemplate().getGuideProfile().getUser().getId(), userId);
+        boolean isInWishlist = wishlistRepository.existsByUser_IdAndSession_Id(userId, sessionId);
 
         return new SessionDetailResponse(
                 template.getTitle(),
@@ -136,7 +139,8 @@ public class SessionService {
                 session.getStatus().name(),
                 participants,
                 isParticipating,
-                isMySession
+                isMySession,
+                isInWishlist
         );
     }
 
@@ -219,7 +223,7 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
-    public SessionItinerariesResponse getItineraries(long userId, long sessionId) {
+    public SessionItinerariesResponse getItineraries(long sessionId) {
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
         List<SessionItineraryItemResponse> itineraries = session.getSessionItineraries().stream()
@@ -237,7 +241,7 @@ public class SessionService {
     }
 
     @Transactional
-    public void closeRecruitment(Long userId, Long sessionId) {
+    public void closeRecruitment(long userId, long sessionId) {
         Session session = findSessionAndVerifyOwner(userId, sessionId);
 
         if (session.getStatus() != SessionStatus.RECRUITING) {

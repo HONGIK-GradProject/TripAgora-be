@@ -40,6 +40,8 @@ public class QTemplate extends EntityPathBase<Template> {
 
     public final NumberPath<Integer> reviewCount = createNumber("reviewCount", Integer.class);
 
+    public final ListPath<com.example.TripAgora.review.entity.Review, com.example.TripAgora.review.entity.QReview> reviews = this.<com.example.TripAgora.review.entity.Review, com.example.TripAgora.review.entity.QReview>createList("reviews", com.example.TripAgora.review.entity.Review.class, com.example.TripAgora.review.entity.QReview.class, PathInits.DIRECT2);
+
     public final ListPath<com.example.TripAgora.session.entity.Session, com.example.TripAgora.session.entity.QSession> sessions = this.<com.example.TripAgora.session.entity.Session, com.example.TripAgora.session.entity.QSession>createList("sessions", com.example.TripAgora.session.entity.Session.class, com.example.TripAgora.session.entity.QSession.class, PathInits.DIRECT2);
 
     public final ListPath<TemplateImage, QTemplateImage> templateImages = this.<TemplateImage, QTemplateImage>createList("templateImages", TemplateImage.class, QTemplateImage.class, PathInits.DIRECT2);

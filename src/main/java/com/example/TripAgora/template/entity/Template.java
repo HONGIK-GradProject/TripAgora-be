@@ -3,6 +3,7 @@ package com.example.TripAgora.template.entity;
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.region.entity.TemplateRegion;
+import com.example.TripAgora.review.entity.Review;
 import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.tag.entity.TemplateTag;
 import com.example.TripAgora.template.dto.request.ItineraryItemRequest;
@@ -56,6 +57,10 @@ public class Template extends BaseEntity {
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
+
     @Builder
     private Template(GuideProfile guideProfile, String title, String content) {
         this.guideProfile = guideProfile;
@@ -69,6 +74,11 @@ public class Template extends BaseEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void updateRating(Double avgRating, Integer reviewCount) {
+        this.avgRating = avgRating;
+        this.reviewCount = reviewCount;
     }
 
     public void clearImages() {

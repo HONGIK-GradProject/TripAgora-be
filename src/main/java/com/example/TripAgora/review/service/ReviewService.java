@@ -1,12 +1,15 @@
 package com.example.TripAgora.review.service;
 
+import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.participation.repository.ParticipationRepository;
 import com.example.TripAgora.review.dto.request.ReviewCreateRequest;
+import com.example.TripAgora.review.dto.request.ReviewUpdateRequest;
 import com.example.TripAgora.review.dto.response.ReviewResponse;
 import com.example.TripAgora.review.entity.Review;
 import com.example.TripAgora.review.exception.AlreadyReviewedException;
 import com.example.TripAgora.review.exception.ReviewNotAllowedException;
+import com.example.TripAgora.review.exception.ReviewNotFoundException;
 import com.example.TripAgora.review.exception.SessionNotCompletedException;
 import com.example.TripAgora.review.repository.ReviewRepository;
 import com.example.TripAgora.session.entity.Session;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +40,7 @@ public class ReviewService {
     private final TemplateRepository templateRepository;
     private final ParticipationRepository participationRepository;
 
-    public ReviewResponse createReview(long userId, ReviewCreateRequest request) {
+    public ReviewResponse createReview(Long userId, ReviewCreateRequest request) {
         User author = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Session session = sessionRepository.findById(request.sessionId()).orElseThrow(SessionNotFoundException::new);
         Template template = session.getTemplate();
@@ -75,6 +79,26 @@ public class ReviewService {
                 );
     }
 
+    public ReviewResponse updateReview(Long userId, Long reviewId, ReviewUpdateRequest request) {
+        Review review = findReviewAndVerifyOwner(userId, reviewId);
+
+        review.update(request.content(), request.rating());
+
+        updateTemplateRating(review.getTemplate());
+        updateGuideProfileRating(review.getGuideProfile());
+
+        return new ReviewResponse(
+                review.getId(),
+                review.getAuthor().getNickname(),
+                review.getAuthor().getImageUrl(),
+                review.getContent(),
+                review.getRating(),
+                review.getCreatedAt()
+        );
+    }
+
+
+
     private void updateTemplateRating(Template template) {
         List<Review> reviews = reviewRepository.findByTemplate(template);
 
@@ -107,5 +131,15 @@ public class ReviewService {
         participationRepository.findByUserAndSession(user, session)
                 .filter(p -> p.getRole() == Role.TRAVELER)
                 .orElseThrow(ReviewNotAllowedException::new);
+    }
+
+    private Review findReviewAndVerifyOwner(Long userId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+
+        if (!Objects.equals(review.getAuthor().getId(), userId)) {
+            throw new AccessDeniedException();
+        }
+
+        return review;
     }
 }

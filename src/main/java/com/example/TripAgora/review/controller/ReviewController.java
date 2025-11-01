@@ -32,4 +32,11 @@ public class ReviewController {
         ReviewResponse response = reviewService.updateReview(userId, reviewId, request);
         return ApiResponse.success(SuccessCode.OK, response);
     }
+
+    @DeleteMapping("/{reviewId}")
+    public ApiResponse<Void> deleteReview(@AuthenticationPrincipal final long userId,
+                                          @PathVariable final long reviewId) {
+        reviewService.deleteReview(userId, reviewId);
+        return ApiResponse.success(SuccessCode.OK);
+    }
 }

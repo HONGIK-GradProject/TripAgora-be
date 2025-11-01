@@ -97,7 +97,16 @@ public class ReviewService {
         );
     }
 
+    public void deleteReview(Long userId, Long reviewId) {
+        Review review = findReviewAndVerifyOwner(userId, reviewId);
+        Template template = review.getTemplate();
+        GuideProfile guideProfile = review.getGuideProfile();
 
+        reviewRepository.delete(review);
+
+        updateTemplateRating(template);
+        updateGuideProfileRating(guideProfile);
+    }
 
     private void updateTemplateRating(Template template) {
         List<Review> reviews = reviewRepository.findByTemplate(template);

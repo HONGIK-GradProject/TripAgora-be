@@ -121,9 +121,11 @@ public class SessionService {
                     );
                 })
                 .toList();
+        User guide = template.getGuideProfile().getUser();
+        String guideImageUrl = guide.getImageUrl();
 
         boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
-        boolean isMySession = Objects.equals(session.getTemplate().getGuideProfile().getUser().getId(), userId);
+        boolean isMySession = Objects.equals(guide.getId(), userId);
         boolean isInWishlist = wishlistRepository.existsByUser_IdAndSession_Id(userId, sessionId);
 
         return new SessionDetailResponse(
@@ -138,6 +140,7 @@ public class SessionService {
                 session.getEndDate(),
                 session.getStatus().name(),
                 participants,
+                guideImageUrl,
                 isParticipating,
                 isMySession,
                 isInWishlist
@@ -181,19 +184,6 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
-    public SessionListResponse getSessions(long userId, List<SessionStatus> statuses, Pageable pageable) {
-        Slice<Session> sessionSlice;
-
-        if (statuses == null || statuses.isEmpty()) {
-            sessionSlice = sessionRepository.findAll(pageable);
-        } else {
-            sessionSlice = sessionRepository.findByStatusIn(statuses, pageable);
-        }
-
-        return convertToSessionListResponse(sessionSlice);
-    }
-
-    @Transactional(readOnly = true)
     public SessionListResponse getMySessions(long userId, List<SessionStatus> statuses, Pageable pageable) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         GuideProfile guideProfile = user.getGuideProfile();
@@ -203,7 +193,7 @@ public class SessionService {
 
         Slice<Session> sessionSlice = sessionRepository.findByTemplate_GuideProfileAndStatusIn(guideProfile, statuses, pageable);
 
-        return convertToSessionListResponse(sessionSlice);
+        return getSessionListResponse(sessionSlice);
     }
 
     @Transactional(readOnly = true)
@@ -219,7 +209,7 @@ public class SessionService {
 
         Slice<Session> sessionSlice = participationSlice.map(Participation::getSession);
 
-        return convertToSessionListResponse(sessionSlice);
+        return getSessionListResponse(sessionSlice);
     }
 
     @Transactional(readOnly = true)
@@ -261,7 +251,7 @@ public class SessionService {
     public SessionListResponse searchSessions(SessionSearchRequest request, Pageable pageable) {
         Slice<Session> sessionSlice = sessionRepository.search(request, pageable);
 
-        return convertToSessionListResponse(sessionSlice);
+        return getSessionListResponse(sessionSlice);
     }
 
     private Session findSessionAndVerifyOwner(long userId, long sessionId) {
@@ -274,7 +264,7 @@ public class SessionService {
         return session;
     }
 
-    private SessionListResponse convertToSessionListResponse(Slice<Session> sessionSlice) {
+    public static SessionListResponse getSessionListResponse(Slice<Session> sessionSlice) {
         List<SessionSummaryResponse> summaries = sessionSlice.getContent().stream()
                 .map(session -> {
                     Template template = session.getTemplate();

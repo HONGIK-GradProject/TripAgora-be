@@ -11,7 +11,6 @@ public record SessionDetailResponse(
         List<Long> regionIds,
         List<Long> tagIds,
         List<String> imageUrls,
-
         Integer maxParticipants,
         Integer currentParticipants,
         @JsonFormat(pattern = "yyyy-MM-dd")
@@ -19,8 +18,8 @@ public record SessionDetailResponse(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate endDate,
         String status,
-
         List<SessionParticipantResponse> participants,
+        String guideImageUrl,
         boolean isParticipating,
         boolean isMySession,
         boolean isInWishlist) {}

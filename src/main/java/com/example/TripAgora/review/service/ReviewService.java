@@ -33,7 +33,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional
 public class ReviewService {
-
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
@@ -110,10 +109,12 @@ public class ReviewService {
 
     private void updateTemplateRating(Template template) {
         List<Review> reviews = reviewRepository.findByTemplate(template);
-
         int reviewCount = reviews.size();
+
         double avgRating = reviews.stream()
-                .mapToInt(Review::getRating)
+                .map(Review::getRating)
+                .filter(Objects::nonNull) // null인 평점은 집계에서 제외
+                .mapToInt(Integer::intValue) // null이 걸러진 후에 int로 변환
                 .average()
                 .orElse(0.0);
 
@@ -124,12 +125,16 @@ public class ReviewService {
         List<Template> templates = templateRepository.findByGuideProfile(guideProfile);
 
         int totalReviewCount = templates.stream()
-                .mapToInt(Template::getReviewCount)
+                .map(Template::getReviewCount)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
                 .sum();
 
         double avgOfTemplateAvgs = templates.stream()
-                .filter(t -> t.getReviewCount() > 0)
-                .mapToDouble(Template::getAvgRating)
+                .filter(t -> t.getReviewCount() != null && t.getReviewCount() > 0)
+                .map(Template::getAvgRating)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0.0);
 

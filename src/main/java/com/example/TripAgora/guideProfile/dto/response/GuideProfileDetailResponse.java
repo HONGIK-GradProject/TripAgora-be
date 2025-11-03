@@ -6,7 +6,7 @@ import java.util.List;
 
 public record GuideProfileDetailResponse(
         String nickname,
-        String profileImageUrl,
+        String imageUrl,
         String bio,
         Double totalAvgRating,
         Integer totalReviewCount,

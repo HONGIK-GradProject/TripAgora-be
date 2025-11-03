@@ -2,8 +2,10 @@ package com.example.TripAgora.guideProfile.service;
 
 import com.example.TripAgora.auth.dto.ReissueResponse;
 import com.example.TripAgora.auth.service.JWTService;
-import com.example.TripAgora.guideProfile.dto.response.GuideProfileDetailResponse;
-import com.example.TripAgora.guideProfile.dto.response.PortfolioResponse;
+import com.example.TripAgora.common.image.service.ImageService;
+import com.example.TripAgora.guideProfile.dto.request.GuideBioUpdateRequest;
+import com.example.TripAgora.guideProfile.dto.request.GuidePortfolioUpdateRequest;
+import com.example.TripAgora.guideProfile.dto.response.*;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.AlreadyGuideException;
 import com.example.TripAgora.guideProfile.exception.AlreadyTravelerException;
@@ -25,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,7 @@ public class GuideProfileService {
     private final UserRepository userRepository;
     private final GuideProfileRepository guideProfileRepository;
     private final SessionRepository sessionRepository;
+    private final ImageService imageService;
 
     @Transactional
     public GuideSwitchResponse switchToGuide(Long userId) {
@@ -107,5 +111,34 @@ public class GuideProfileService {
                 portfolios,
                 sessionListResponse
         );
+    }
+
+    public GuideBioUpdateResponse updateMyBio(Long userId, GuideBioUpdateRequest request) {
+        GuideProfile guideProfile = guideProfileRepository.findByUser_Id(userId).orElseThrow(GuideProfileNotFoundException::new);
+        guideProfile.updateBio(request.bio());
+
+        return new GuideBioUpdateResponse(guideProfile.getBio());
+    }
+
+    public GuideImageUpdateResponse updateMyImageUrl(Long userId, MultipartFile imageFile) {
+        GuideProfile guideProfile = guideProfileRepository.findByUser_Id(userId).orElseThrow(GuideProfileNotFoundException::new);
+
+        String oldImageUrl = guideProfile.getImageUrl();
+        String newImageUrl = imageService.updateImage(oldImageUrl, imageFile);
+
+        guideProfile.updateImageUrl(newImageUrl);
+
+        return new GuideImageUpdateResponse(guideProfile.getImageUrl());
+    }
+
+    public GuidePortfolioUpdateResponse updateMyPortfolios(Long userId, GuidePortfolioUpdateRequest request) {
+        GuideProfile guideProfile = guideProfileRepository.findByUser_Id(userId).orElseThrow(GuideProfileNotFoundException::new);
+        guideProfile.updatePortfolios(request.portfolios());
+
+        List<PortfolioResponse> portfolioResponses = guideProfile.getPortfolios().stream()
+                .map(p -> new PortfolioResponse(p.getType().name(), p.getUrl()))
+                .toList();
+
+        return new GuidePortfolioUpdateResponse(portfolioResponses);
     }
 }

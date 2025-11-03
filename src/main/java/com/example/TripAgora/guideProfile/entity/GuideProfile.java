@@ -1,6 +1,7 @@
 package com.example.TripAgora.guideProfile.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
+import com.example.TripAgora.guideProfile.dto.request.GuidePortfolioUpdateRequest;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.user.entity.User;
 import jakarta.persistence.*;
@@ -50,6 +51,24 @@ public class GuideProfile extends BaseEntity {
 
     public void updateBio(String bio) {
         this.bio = bio;
+    }
+
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updatePortfolios(List<GuidePortfolioUpdateRequest.PortfolioItem> newPortfolios) {
+        this.portfolios.clear();
+
+        if (newPortfolios != null) {
+            newPortfolios.forEach(item -> {
+                this.portfolios.add(GuidePortfolio.builder()
+                        .guideProfile(this)
+                        .type(item.type())
+                        .url(item.url())
+                        .build());
+            });
+        }
     }
 
     public void updateRating(double newAverage, int newReviewCount) {

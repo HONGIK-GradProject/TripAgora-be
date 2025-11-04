@@ -17,5 +17,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     boolean existsByAuthorAndSession(User author, Session session);
     List<Review> findByTemplate(Template template);
     Slice<Review> findByTemplate(Template template, Pageable pageable);
-    List<Review> findByGuideProfile(GuideProfile guideProfile);
+    Slice<Review> findByGuideProfile(GuideProfile guideProfile, Pageable pageable);
 }

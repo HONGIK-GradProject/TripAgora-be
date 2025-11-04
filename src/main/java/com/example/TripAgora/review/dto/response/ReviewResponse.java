@@ -8,5 +8,4 @@ public record ReviewResponse(
         String authorProfileImage,
         String content,
         Integer rating,
-        LocalDateTime createdAt
-) {}
+        LocalDateTime createdAt) {}

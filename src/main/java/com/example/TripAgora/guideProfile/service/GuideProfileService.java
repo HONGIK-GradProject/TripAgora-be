@@ -81,6 +81,7 @@ public class GuideProfileService {
         // TODO: 여행객용 홈화면 확정 후 수정
     }
 
+    @Transactional(readOnly = true)
     public GuideProfileDetailResponse getGuideProfileDetails(Long guideProfileId, Pageable pageable) {
         GuideProfile guideProfile = guideProfileRepository.findById(guideProfileId).orElseThrow(GuideProfileNotFoundException::new);
         User user = guideProfile.getUser();
@@ -113,6 +114,7 @@ public class GuideProfileService {
         );
     }
 
+    @Transactional
     public GuideBioUpdateResponse updateMyBio(Long userId, GuideBioUpdateRequest request) {
         GuideProfile guideProfile = guideProfileRepository.findByUser_Id(userId).orElseThrow(GuideProfileNotFoundException::new);
         guideProfile.updateBio(request.bio());
@@ -120,6 +122,7 @@ public class GuideProfileService {
         return new GuideBioUpdateResponse(guideProfile.getBio());
     }
 
+    @Transactional
     public GuideImageUpdateResponse updateMyImageUrl(Long userId, MultipartFile imageFile) {
         GuideProfile guideProfile = guideProfileRepository.findByUser_Id(userId).orElseThrow(GuideProfileNotFoundException::new);
 
@@ -131,6 +134,7 @@ public class GuideProfileService {
         return new GuideImageUpdateResponse(guideProfile.getImageUrl());
     }
 
+    @Transactional
     public GuidePortfolioUpdateResponse updateMyPortfolios(Long userId, GuidePortfolioUpdateRequest request) {
         GuideProfile guideProfile = guideProfileRepository.findByUser_Id(userId).orElseThrow(GuideProfileNotFoundException::new);
         guideProfile.updatePortfolios(request.portfolios());

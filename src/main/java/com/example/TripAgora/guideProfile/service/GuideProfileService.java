@@ -106,8 +106,6 @@ public class GuideProfileService {
                 user.getNickname(),
                 guideProfile.getImageUrl(),
                 guideProfile.getBio(),
-                guideProfile.getTotalAvgRating(),
-                guideProfile.getTotalReviewCount(),
                 tagIds,
                 portfolios,
                 sessionListResponse

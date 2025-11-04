@@ -8,8 +8,6 @@ public record GuideProfileDetailResponse(
         String nickname,
         String imageUrl,
         String bio,
-        Double totalAvgRating,
-        Integer totalReviewCount,
         List<Long> tags,
         List<PortfolioResponse> portfolios,
         SessionListResponse SessionList) {}

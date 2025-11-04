@@ -4,6 +4,6 @@ import com.example.TripAgora.common.code.GuideProfileErrorCode;
 
 public class GuideProfileNotFoundException extends GuideProfileException {
     public GuideProfileNotFoundException() {
-        super(GuideProfileErrorCode.ALREADY_GUIDE);
+        super(GuideProfileErrorCode.GUIDE_PROFILE_NOT_FOUND);
     }
 }

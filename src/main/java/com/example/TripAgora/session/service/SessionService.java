@@ -121,8 +121,10 @@ public class SessionService {
                     );
                 })
                 .toList();
-        User guide = template.getGuideProfile().getUser();
-        String guideImageUrl = guide.getImageUrl();
+        GuideProfile guideProfile = template.getGuideProfile();
+
+        Long guideProfileId = guideProfile.getUser().getId();
+        User guide = guideProfile.getUser();
 
         boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
         boolean isMySession = Objects.equals(guide.getId(), userId);
@@ -140,7 +142,7 @@ public class SessionService {
                 session.getEndDate(),
                 session.getStatus().name(),
                 participants,
-                guideImageUrl,
+                guideProfileId,
                 isParticipating,
                 isMySession,
                 isInWishlist

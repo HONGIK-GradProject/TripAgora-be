@@ -19,7 +19,7 @@ public record SessionDetailResponse(
         LocalDate endDate,
         String status,
         List<SessionParticipantResponse> participants,
-        String guideImageUrl,
+        Long guideProfileId,
         boolean isParticipating,
         boolean isMySession,
         boolean isInWishlist) {}

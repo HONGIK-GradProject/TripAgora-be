@@ -2,9 +2,12 @@ package com.example.TripAgora.review.service;
 
 import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
+import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
+import com.example.TripAgora.guideProfile.repository.GuideProfileRepository;
 import com.example.TripAgora.participation.repository.ParticipationRepository;
 import com.example.TripAgora.review.dto.request.ReviewCreateRequest;
 import com.example.TripAgora.review.dto.request.ReviewUpdateRequest;
+import com.example.TripAgora.review.dto.response.ReviewListResponse;
 import com.example.TripAgora.review.dto.response.ReviewResponse;
 import com.example.TripAgora.review.entity.Review;
 import com.example.TripAgora.review.exception.AlreadyReviewedException;
@@ -17,12 +20,15 @@ import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.exception.SessionNotFoundException;
 import com.example.TripAgora.session.repository.SessionRepository;
 import com.example.TripAgora.template.entity.Template;
+import com.example.TripAgora.template.exception.TemplateNotFoundException;
 import com.example.TripAgora.template.repository.TemplateRepository;
 import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import com.example.TripAgora.user.exception.UserNotFoundException;
 import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +44,7 @@ public class ReviewService {
     private final SessionRepository sessionRepository;
     private final TemplateRepository templateRepository;
     private final ParticipationRepository participationRepository;
+    private final GuideProfileRepository guideProfileRepository;
 
     public ReviewResponse createReview(Long userId, ReviewCreateRequest request) {
         User author = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
@@ -105,6 +112,55 @@ public class ReviewService {
 
         updateTemplateRating(template);
         updateGuideProfileRating(guideProfile);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewListResponse getGuideReviews(Long guideProfileId, Pageable pageable) {
+        GuideProfile guideProfile = guideProfileRepository.findById(guideProfileId).orElseThrow(GuideProfileNotFoundException::new);
+        Slice<Review> reviewSlice = reviewRepository.findByGuideProfile(guideProfile, pageable);
+
+        List<ReviewResponse> reviews = reviewSlice.getContent().stream()
+                .map(review -> new ReviewResponse(
+                        review.getId(),
+                        review.getAuthor().getNickname(),
+                        review.getAuthor().getImageUrl(),
+                        review.getContent(),
+                        review.getRating(),
+                        review.getCreatedAt()
+                ))
+                .toList();
+
+        return new ReviewListResponse(
+                guideProfile.getTotalAvgRating(),
+                guideProfile.getTotalReviewCount(),
+                reviews,
+                reviewSlice.hasNext()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewListResponse getTemplateReviews(Long templateId, Pageable pageable) {
+        Template template = templateRepository.findById(templateId).orElseThrow(TemplateNotFoundException::new);
+
+        Slice<Review> reviewSlice = reviewRepository.findByTemplate(template, pageable);
+
+        List<ReviewResponse> reviews = reviewSlice.getContent().stream()
+                .map(review -> new ReviewResponse(
+                        review.getId(),
+                        review.getAuthor().getNickname(),
+                        review.getAuthor().getImageUrl(),
+                        review.getContent(),
+                        review.getRating(),
+                        review.getCreatedAt()
+                ))
+                .toList();
+
+        return new ReviewListResponse(
+                template.getAvgRating(),
+                template.getReviewCount(),
+                reviews,
+                reviewSlice.hasNext()
+        );
     }
 
     private void updateTemplateRating(Template template) {

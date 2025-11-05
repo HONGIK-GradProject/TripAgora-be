@@ -10,6 +10,7 @@ import com.example.TripAgora.region.exception.InvalidRegionSelectionException;
 import com.example.TripAgora.region.exception.RegionHierarchyConflictException;
 import com.example.TripAgora.region.repository.RegionRepository;
 import com.example.TripAgora.region.repository.TemplateRegionRepository;
+import com.example.TripAgora.session.repository.SessionRepository;
 import com.example.TripAgora.tag.entity.Tag;
 import com.example.TripAgora.tag.entity.TemplateTag;
 import com.example.TripAgora.tag.exception.InvalidTagSelectionException;
@@ -21,6 +22,7 @@ import com.example.TripAgora.template.dto.response.*;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.entity.TemplateImage;
 import com.example.TripAgora.template.exception.ItineraryDaySequenceInvalidException;
+import com.example.TripAgora.template.exception.TemplateHasActiveSessionsException;
 import com.example.TripAgora.template.exception.TemplateNotFoundException;
 import com.example.TripAgora.template.repository.TemplateRepository;
 import com.example.TripAgora.user.entity.User;
@@ -48,6 +50,7 @@ public class TemplateService {
     private final RegionRepository regionRepository;
     private final TemplateTagRepository templateTagRepository;
     private final TemplateRegionRepository templateRegionRepository;
+    private final SessionRepository sessionRepository;
 
     @Transactional
     public TemplateCreateResponse createDraftTemplate(long userId) {
@@ -143,6 +146,7 @@ public class TemplateService {
     @Transactional
     public TemplateTitleUpdateResponse updateTitle(long userId, long templateId, TemplateTitleUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
         template.updateTitle(request.title());
 
         return new TemplateTitleUpdateResponse(template.getTitle());
@@ -151,6 +155,7 @@ public class TemplateService {
     @Transactional
     public TemplateContentUpdateResponse updateContent(long userId, long templateId, TemplateContentUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
         template.updateContent(request.content());
 
         return new TemplateContentUpdateResponse(template.getContent());
@@ -159,6 +164,7 @@ public class TemplateService {
     @Transactional
     public TemplateImageUpdateResponse updateImages(long userId, long templateId, List<MultipartFile> images) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
 
         template.getTemplateImages().forEach(image -> imageService.deleteImage(image.getImageUrl()));
         template.clearImages();
@@ -178,6 +184,7 @@ public class TemplateService {
     @Transactional
     public TemplateTagUpdateResponse updateTags(long userId, long templateId, TemplateTagUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
 
         List<Long> tagIds = request.tagIds();
 
@@ -209,6 +216,7 @@ public class TemplateService {
     @Transactional
     public TemplateRegionUpdateResponse updateRegions(long userId, long templateId, TemplateRegionUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
 
         List<Long> regionIds = request.regionIds();
 
@@ -242,6 +250,7 @@ public class TemplateService {
     @Transactional
     public void updateItineraries(long userId, long templateId, TemplateItineraryUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
 
         Map<Integer, List<ItineraryItemRequest>> itinerariesByDay = request.itineraries().stream()
                 .collect(Collectors.groupingBy(ItineraryItemRequest::day));
@@ -260,6 +269,8 @@ public class TemplateService {
     @Transactional
     public void deleteTemplate(long userId, long templateId) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
+        verifyNoActiveSessions(templateId);
+
         templateRepository.delete(template);
     }
 
@@ -271,5 +282,11 @@ public class TemplateService {
         }
 
         return template;
+    }
+
+    private void verifyNoActiveSessions(long templateId) {
+        if (sessionRepository.existsActiveSessionByTemplateId(templateId)) {
+            throw new TemplateHasActiveSessionsException();
+        }
     }
 }

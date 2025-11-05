@@ -44,4 +44,11 @@ public interface SessionRepository extends JpaRepository<Session, Long>, Session
             @Param("guideProfile") GuideProfile guideProfile,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    // 특정 템플릿에 활성 세션이 있는지 확인
+    @Query("SELECT COUNT(s) > 0 FROM Session s " +
+            "WHERE s.template.id = :templateId " +
+            "AND s.status IN ('RECRUITING', 'RECRUITMENT_CLOSED', 'IN_PROGRESS')")
+    boolean existsActiveSessionByTemplateId(@Param("templateId") Long templateId);
+
 }

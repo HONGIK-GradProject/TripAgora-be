@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,11 @@ public class UserService {
         String role = user.getRole().toString();
         String imageUrl = user.getImageUrl();
 
-        return new UserInfoResponse(nickname, role, imageUrl);
+        List<Long> tagIds = user.getUserTags().stream()
+                .map(userTag -> userTag.getTag().getId())
+                .toList();
+
+        return new UserInfoResponse(nickname, role, imageUrl, tagIds);
     }
 
     @Transactional

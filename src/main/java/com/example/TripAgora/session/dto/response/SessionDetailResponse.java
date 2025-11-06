@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record SessionDetailResponse(
+        Long templateId,
         String title,
         String content,
         List<Long> regionIds,

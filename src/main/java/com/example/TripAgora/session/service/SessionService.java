@@ -140,6 +140,7 @@ public class SessionService {
         boolean isInWishlist = wishlistRepository.existsByUser_IdAndSession_Id(userId, sessionId);
 
         return new SessionDetailResponse(
+                template.getId(),
                 template.getTitle(),
                 template.getContent(),
                 regions,

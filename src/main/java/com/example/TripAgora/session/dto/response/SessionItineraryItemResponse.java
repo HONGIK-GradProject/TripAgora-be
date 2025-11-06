@@ -7,7 +7,7 @@ import java.time.LocalTime;
 public record SessionItineraryItemResponse(
         Long id,
         Integer day,
-        String title,
+        String location,
         String content,
         @JsonFormat(pattern = "HH:mm:ss")
         LocalTime startTime,

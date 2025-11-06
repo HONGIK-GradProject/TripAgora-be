@@ -26,7 +26,7 @@ public class TemplateItinerary extends BaseEntity {
     private Integer day;
 
     @Column(nullable = false)
-    private String title;
+    private String location;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -41,10 +41,10 @@ public class TemplateItinerary extends BaseEntity {
     private Double longitude;
 
     @Builder
-    private TemplateItinerary(Template template, Integer day, String title, String content, LocalTime startTime, Double latitude, Double longitude) {
+    private TemplateItinerary(Template template, Integer day, String location, String content, LocalTime startTime, Double latitude, Double longitude) {
         this.template = template;
         this.day = day;
-        this.title = title;
+        this.location = location;
         this.content = content;
         this.startTime = startTime;
         this.latitude = latitude;

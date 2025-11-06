@@ -27,7 +27,7 @@ public class SessionItinerary extends BaseEntity {
     private Integer day;
 
     @Column(nullable = false)
-    private String title;
+    private String location;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -45,7 +45,7 @@ public class SessionItinerary extends BaseEntity {
     private SessionItinerary(Session session, TemplateItinerary templateItinerary) {
         this.session = session;
         this.day = templateItinerary.getDay();
-        this.title = templateItinerary.getTitle();
+        this.location = templateItinerary.getLocation();
         this.content = templateItinerary.getContent();
         this.startTime = templateItinerary.getStartTime();
         this.latitude = templateItinerary.getLatitude();

@@ -133,7 +133,7 @@ public class TemplateService {
                 .map(itinerary -> new TemplateItineraryItemResponse(
                         itinerary.getId(),
                         itinerary.getDay(),
-                        itinerary.getTitle(),
+                        itinerary.getLocation(),
                         itinerary.getContent(),
                         itinerary.getStartTime(),
                         itinerary.getLatitude(),

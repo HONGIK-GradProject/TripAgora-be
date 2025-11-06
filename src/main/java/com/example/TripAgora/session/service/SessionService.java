@@ -222,7 +222,7 @@ public class SessionService {
                 .map(itinerary -> new SessionItineraryItemResponse(
                         itinerary.getId(),
                         itinerary.getDay(),
-                        itinerary.getTitle(),
+                        itinerary.getLocation(),
                         itinerary.getContent(),
                         itinerary.getStartTime(),
                         itinerary.getLatitude(),

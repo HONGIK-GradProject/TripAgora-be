@@ -9,8 +9,8 @@ public record ItineraryItemRequest(
         @NotNull(message = "일자는 필수입니다.")
         Integer day,
 
-        @NotBlank(message = "일정 제목은 공백일 수 없습니다.")
-        String title,
+        @NotBlank(message = "일정 장소는 공백일 수 없습니다.")
+        String location,
 
         String content,
 

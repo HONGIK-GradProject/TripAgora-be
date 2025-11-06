@@ -102,7 +102,7 @@ public class Template extends BaseEntity {
         TemplateItinerary itinerary = TemplateItinerary.builder()
                 .template(this)
                 .day(item.day())
-                .title(item.title())
+                .location(item.location())
                 .content(item.content())
                 .startTime(item.startTime())
                 .latitude(item.latitude())

@@ -35,6 +35,8 @@ public class QSessionItinerary extends EntityPathBase<SessionItinerary> {
 
     public final NumberPath<Double> latitude = createNumber("latitude", Double.class);
 
+    public final StringPath location = createString("location");
+
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
 
     //inherited
@@ -43,8 +45,6 @@ public class QSessionItinerary extends EntityPathBase<SessionItinerary> {
     public final QSession session;
 
     public final TimePath<java.time.LocalTime> startTime = createTime("startTime", java.time.LocalTime.class);
-
-    public final StringPath title = createString("title");
 
     public QSessionItinerary(String variable) {
         this(SessionItinerary.class, forVariable(variable), INITS);

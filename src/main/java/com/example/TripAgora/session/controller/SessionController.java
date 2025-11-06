@@ -7,10 +7,11 @@ import com.example.TripAgora.session.dto.request.SessionSearchRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
-import com.example.TripAgora.session.dto.response.SessionItinerariesResponse;
 import com.example.TripAgora.session.dto.response.SessionListResponse;
 import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.service.SessionService;
+import com.example.TripAgora.template.dto.request.ItineraryUpdateRequest;
+import com.example.TripAgora.template.dto.response.ItinerariesResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -56,10 +57,18 @@ public class SessionController {
     }
 
     @GetMapping("/{sessionId}/itineraries")
-    public ApiResponse<SessionItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
-                                                                   @PathVariable final long sessionId) {
-        SessionItinerariesResponse response = sessionService.getItineraries(sessionId);
+    public ApiResponse<ItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
+                                                           @PathVariable final long sessionId) {
+        ItinerariesResponse response = sessionService.getItineraries(sessionId);
         return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @PutMapping("/{sessionId}/itineraries")
+    public ApiResponse<Void> updateItineraries(@AuthenticationPrincipal final long userId,
+                                               @PathVariable final long sessionId,
+                                               @RequestBody @Valid final ItineraryUpdateRequest request) {
+        sessionService.updateItineraries(userId, sessionId, request);
+        return ApiResponse.success(SuccessCode.OK);
     }
 
     @GetMapping("/my")

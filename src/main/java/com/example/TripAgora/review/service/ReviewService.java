@@ -198,7 +198,7 @@ public class ReviewService {
     }
 
     private void validateReviewer(User user, Session session) {
-        participationRepository.findByUserAndSession(user, session)
+        participationRepository.findByUser_IdAndSession_Id(user.getId(), session.getId())
                 .filter(p -> p.getRole() == Role.TRAVELER)
                 .orElseThrow(ReviewNotAllowedException::new);
     }

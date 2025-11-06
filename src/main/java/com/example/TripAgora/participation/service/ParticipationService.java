@@ -37,7 +37,7 @@ public class ParticipationService {
             throw new CannotParticipateInOwnSessionException();
         }
 
-        participationRepository.findByUserAndSession(user, session).ifPresent(p -> {
+        participationRepository.findByUser_IdAndSession_Id(userId, sessionId).ifPresent(p -> {
             throw new AlreadyParticipatingException();
         });
 
@@ -61,10 +61,9 @@ public class ParticipationService {
 
     @Transactional
     public void cancelParticipation(Long userId, Long sessionId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
-        Participation participation = participationRepository.findByUserAndSession(user, session)
+        Participation participation = participationRepository.findByUser_IdAndSession_Id(userId, sessionId)
                 .orElseThrow(ParticipationNotFoundException::new);
 
         validateSessionStatus(session);

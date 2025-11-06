@@ -29,9 +29,9 @@ public class TemplateController {
     }
 
     @GetMapping("/{templateId}/itineraries")
-    public ApiResponse<TemplateItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
-                                                                   @PathVariable final long templateId) {
-        TemplateItinerariesResponse response = templateService.getItineraries(userId, templateId);
+    public ApiResponse<ItinerariesResponse> getItineraries(@AuthenticationPrincipal final long userId,
+                                                           @PathVariable final long templateId) {
+        ItinerariesResponse response = templateService.getItineraries(userId, templateId);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
@@ -91,7 +91,7 @@ public class TemplateController {
     @PutMapping("/{templateId}/itineraries")
     public ApiResponse<Void> updateItineraries(@AuthenticationPrincipal final long userId,
                                                @PathVariable final long templateId,
-                                               @RequestBody @Valid final TemplateItineraryUpdateRequest request) {
+                                               @RequestBody @Valid final ItineraryUpdateRequest request) {
         templateService.updateItineraries(userId, templateId, request);
         return ApiResponse.success(SuccessCode.OK);
     }

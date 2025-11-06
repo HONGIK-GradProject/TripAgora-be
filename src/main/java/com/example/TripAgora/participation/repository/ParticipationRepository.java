@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface ParticipationRepository extends JpaRepository<Participation, Long> {
     // TODO: 두 메서드 합치기?
-    Optional<Participation> findByUserAndSession(User user, Session session);
+    Optional<Participation> findByUser_IdAndSession_Id(long userId, long sessionId);
     boolean existsByUser_IdAndSession_Id(long userId, long sessionId);
 
     Slice<Participation> findByUserAndRoleAndSession_StatusIn(

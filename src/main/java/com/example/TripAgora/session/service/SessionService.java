@@ -4,6 +4,7 @@ import com.example.TripAgora.auth.exception.AccessDeniedException;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundException;
 import com.example.TripAgora.participation.entity.Participation;
+import com.example.TripAgora.participation.exception.ParticipationNotFoundException;
 import com.example.TripAgora.participation.repository.ParticipationRepository;
 import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.room.repository.RoomRepository;
@@ -14,12 +15,14 @@ import com.example.TripAgora.session.dto.response.*;
 import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionItinerary;
 import com.example.TripAgora.session.entity.SessionStatus;
-import com.example.TripAgora.session.exception.InvalidMaxParticipantsException;
-import com.example.TripAgora.session.exception.SessionDateConflictException;
-import com.example.TripAgora.session.exception.SessionNotFoundException;
-import com.example.TripAgora.session.exception.SessionNotRecruitingException;
+import com.example.TripAgora.session.exception.*;
 import com.example.TripAgora.session.repository.SessionRepository;
+import com.example.TripAgora.template.dto.request.ItineraryItemRequest;
+import com.example.TripAgora.template.dto.request.ItineraryUpdateRequest;
+import com.example.TripAgora.template.dto.response.ItinerariesResponse;
+import com.example.TripAgora.template.dto.response.ItineraryItemResponse;
 import com.example.TripAgora.template.entity.Template;
+import com.example.TripAgora.template.exception.ItineraryDaySequenceInvalidException;
 import com.example.TripAgora.template.service.TemplateService;
 import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
@@ -34,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -73,7 +77,12 @@ public class SessionService {
         List<SessionItinerary> sessionItineraries = template.getTemplateItineraries().stream()
                 .map(templateItinerary -> SessionItinerary.builder()
                         .session(session)
-                        .templateItinerary(templateItinerary)
+                        .day(templateItinerary.getDay())
+                        .location(templateItinerary.getLocation())
+                        .content(templateItinerary.getContent())
+                        .startTime(templateItinerary.getStartTime())
+                        .latitude(templateItinerary.getLatitude())
+                        .longitude(templateItinerary.getLongitude())
                         .build())
                 .toList();
 
@@ -215,11 +224,11 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
-    public SessionItinerariesResponse getItineraries(long sessionId) {
+    public ItinerariesResponse getItineraries(long sessionId) {
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
-        List<SessionItineraryItemResponse> itineraries = session.getSessionItineraries().stream()
-                .map(itinerary -> new SessionItineraryItemResponse(
+        List<ItineraryItemResponse> itineraries = session.getSessionItineraries().stream()
+                .map(itinerary -> new ItineraryItemResponse(
                         itinerary.getId(),
                         itinerary.getDay(),
                         itinerary.getLocation(),
@@ -229,7 +238,7 @@ public class SessionService {
                         itinerary.getLongitude()))
                 .toList();
 
-        return new SessionItinerariesResponse(itineraries);
+        return new ItinerariesResponse(itineraries);
     }
 
     @Transactional
@@ -291,5 +300,33 @@ public class SessionService {
                 .toList();
 
         return new SessionListResponse(summaries, sessionSlice.hasNext());
+    }
+
+    @Transactional
+    public void updateItineraries(Long userId, Long sessionId, ItineraryUpdateRequest request) {
+        Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
+        Participation participation = participationRepository.findByUser_IdAndSession_Id(userId, sessionId)
+                .orElseThrow(ParticipationNotFoundException::new);
+
+        if(participation.getRole() != Role.GUIDE) {
+            throw new AccessDeniedException();
+        }
+
+        if (session.getStatus() != SessionStatus.IN_PROGRESS) {
+            throw new SessionNotInProgressException();
+        }
+
+        Map<Integer, List<ItineraryItemRequest>> itinerariesByDay = request.itineraries().stream()
+                .collect(Collectors.groupingBy(ItineraryItemRequest::day));
+
+        int maxDay = itinerariesByDay.keySet().stream().max(Integer::compareTo).orElse(0);
+        for (int i = 1; i <= maxDay; i++) {
+            if (!itinerariesByDay.containsKey(i)) {
+                throw new ItineraryDaySequenceInvalidException();
+            }
+        }
+
+        session.clearItineraries();
+        request.itineraries().forEach(session::addItinerary);
     }
 }

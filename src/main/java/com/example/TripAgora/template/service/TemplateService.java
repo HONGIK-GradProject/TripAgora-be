@@ -126,11 +126,11 @@ public class TemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateItinerariesResponse getItineraries(long userId, long templateId) {
+    public ItinerariesResponse getItineraries(long userId, long templateId) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
 
-        List<TemplateItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
-                .map(itinerary -> new TemplateItineraryItemResponse(
+        List<ItineraryItemResponse> itineraries = template.getTemplateItineraries().stream()
+                .map(itinerary -> new ItineraryItemResponse(
                         itinerary.getId(),
                         itinerary.getDay(),
                         itinerary.getLocation(),
@@ -140,7 +140,7 @@ public class TemplateService {
                         itinerary.getLongitude()))
                 .toList();
 
-        return new TemplateItinerariesResponse(itineraries);
+        return new ItinerariesResponse(itineraries);
     }
 
     @Transactional
@@ -248,7 +248,7 @@ public class TemplateService {
     }
 
     @Transactional
-    public void updateItineraries(long userId, long templateId, TemplateItineraryUpdateRequest request) {
+    public void updateItineraries(long userId, long templateId, ItineraryUpdateRequest request) {
         Template template = findTemplateAndVerifyOwner(userId, templateId);
         verifyNoActiveSessions(templateId);
 

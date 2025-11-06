@@ -42,13 +42,13 @@ public class SessionItinerary extends BaseEntity {
     private Double longitude;
 
     @Builder
-    private SessionItinerary(Session session, TemplateItinerary templateItinerary) {
+    private SessionItinerary(Session session, Integer day, String location, String content, LocalTime startTime, Double latitude, Double longitude) {
         this.session = session;
-        this.day = templateItinerary.getDay();
-        this.location = templateItinerary.getLocation();
-        this.content = templateItinerary.getContent();
-        this.startTime = templateItinerary.getStartTime();
-        this.latitude = templateItinerary.getLatitude();
-        this.longitude = templateItinerary.getLongitude();
+        this.day = day;
+        this.location = location;
+        this.content = content;
+        this.startTime = startTime;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

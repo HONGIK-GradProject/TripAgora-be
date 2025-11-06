@@ -4,6 +4,6 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
-public record TemplateItineraryUpdateRequest(
+public record ItineraryUpdateRequest(
         @Valid
         List<ItineraryItemRequest> itineraries) {}

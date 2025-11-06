@@ -4,6 +4,7 @@ import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.participation.entity.Participation;
 import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.session.exception.SessionFullException;
+import com.example.TripAgora.template.dto.request.ItineraryItemRequest;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.entity.TemplateItinerary;
 import jakarta.persistence.*;
@@ -85,6 +86,23 @@ public class Session extends BaseEntity {
     // TODO: 추후 여행 참여 로직 작성 시 수정
     public void updateStatus(SessionStatus newStatus) {
         this.status = newStatus;
+    }
+
+    public void clearItineraries() {
+        this.sessionItineraries.clear();
+    }
+
+    public void addItinerary(ItineraryItemRequest item) {
+         SessionItinerary itinerary = SessionItinerary.builder()
+                .session(this)
+                .day(item.day())
+                .location(item.location())
+                .content(item.content())
+                .startTime(item.startTime())
+                .latitude(item.latitude())
+                .longitude(item.longitude())
+                .build();
+        this.sessionItineraries.add(itinerary);
     }
 
     public void increaseParticipant() {

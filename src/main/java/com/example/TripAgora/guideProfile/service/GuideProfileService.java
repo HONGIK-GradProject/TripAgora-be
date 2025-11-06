@@ -82,6 +82,18 @@ public class GuideProfileService {
     }
 
     @Transactional(readOnly = true)
+    public GuideProfileDetailResponse getMyGuideProfileDetails(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        GuideProfile guideProfile = user.getGuideProfile();
+        if (guideProfile == null) {
+            throw new GuideProfileNotFoundException();
+        }
+
+        return getGuideProfileDetails(guideProfile.getId(), pageable);
+    }
+
+    @Transactional(readOnly = true)
     public GuideProfileDetailResponse getGuideProfileDetails(Long guideProfileId, Pageable pageable) {
         GuideProfile guideProfile = guideProfileRepository.findById(guideProfileId).orElseThrow(GuideProfileNotFoundException::new);
         User user = guideProfile.getUser();

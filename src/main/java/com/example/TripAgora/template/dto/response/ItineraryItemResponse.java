@@ -1,10 +1,10 @@
-package com.example.TripAgora.session.dto.response;
+package com.example.TripAgora.template.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalTime;
 
-public record SessionItineraryItemResponse(
+public record ItineraryItemResponse(
         Long id,
         Integer day,
         String location,

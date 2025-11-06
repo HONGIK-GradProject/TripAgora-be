@@ -1,7 +1,6 @@
 package com.example.TripAgora.participation.repository;
 
 import com.example.TripAgora.participation.entity.Participation;
-import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;

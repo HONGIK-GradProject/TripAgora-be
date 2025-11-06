@@ -8,14 +8,12 @@ import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.room.exception.RoomNotFoundException;
 import com.example.TripAgora.room.repository.RoomRepository;
 import com.example.TripAgora.user.entity.Role;
-import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class RoomService {
-    private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ParticipationRepository participationRepository;
 

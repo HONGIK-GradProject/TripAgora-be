@@ -1,7 +1,6 @@
 package com.example.TripAgora.session.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
-import com.example.TripAgora.template.entity.TemplateItinerary;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

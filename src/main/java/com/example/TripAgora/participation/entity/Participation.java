@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,10 +33,17 @@ public class Participation extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Column
+    private LocalDateTime lastChatReadAt;
+
     @Builder
     public Participation(User user, Session session, Role role) {
         this.user = user;
         this.session = session;
         this.role = role;
+    }
+
+    public void updateLastReadAt() {
+        this.lastChatReadAt = LocalDateTime.now();
     }
 }

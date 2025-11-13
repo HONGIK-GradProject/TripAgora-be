@@ -2,7 +2,9 @@ package com.example.TripAgora.user.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
+import com.example.TripAgora.participation.entity.Participation;
 import com.example.TripAgora.tag.entity.UserTag;
+import com.example.TripAgora.wishlist.entity.Wishlist;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -48,6 +50,12 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private GuideProfile guideProfile;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participation> participations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wishlist> wishlists = new ArrayList<>();
 
     @Builder
     private User(String socialId, SocialType socialType, String imageUrl) {

@@ -3,6 +3,7 @@ package com.example.TripAgora.user.entity;
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.guideProfile.entity.GuideProfile;
 import com.example.TripAgora.participation.entity.Participation;
+import com.example.TripAgora.review.entity.Review;
 import com.example.TripAgora.tag.entity.UserTag;
 import com.example.TripAgora.wishlist.entity.Wishlist;
 import jakarta.persistence.*;
@@ -56,6 +57,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wishlist> wishlists = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
     @Builder
     private User(String socialId, SocialType socialType, String imageUrl) {

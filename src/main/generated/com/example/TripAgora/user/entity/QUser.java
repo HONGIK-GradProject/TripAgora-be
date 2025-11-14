@@ -38,6 +38,10 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath nickname = createString("nickname");
 
+    public final ListPath<com.example.TripAgora.participation.entity.Participation, com.example.TripAgora.participation.entity.QParticipation> participations = this.<com.example.TripAgora.participation.entity.Participation, com.example.TripAgora.participation.entity.QParticipation>createList("participations", com.example.TripAgora.participation.entity.Participation.class, com.example.TripAgora.participation.entity.QParticipation.class, PathInits.DIRECT2);
+
+    public final ListPath<com.example.TripAgora.review.entity.Review, com.example.TripAgora.review.entity.QReview> reviews = this.<com.example.TripAgora.review.entity.Review, com.example.TripAgora.review.entity.QReview>createList("reviews", com.example.TripAgora.review.entity.Review.class, com.example.TripAgora.review.entity.QReview.class, PathInits.DIRECT2);
+
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
     public final StringPath socialId = createString("socialId");
@@ -45,6 +49,8 @@ public class QUser extends EntityPathBase<User> {
     public final EnumPath<SocialType> socialType = createEnum("socialType", SocialType.class);
 
     public final ListPath<com.example.TripAgora.tag.entity.UserTag, com.example.TripAgora.tag.entity.QUserTag> userTags = this.<com.example.TripAgora.tag.entity.UserTag, com.example.TripAgora.tag.entity.QUserTag>createList("userTags", com.example.TripAgora.tag.entity.UserTag.class, com.example.TripAgora.tag.entity.QUserTag.class, PathInits.DIRECT2);
+
+    public final ListPath<com.example.TripAgora.wishlist.entity.Wishlist, com.example.TripAgora.wishlist.entity.QWishlist> wishlists = this.<com.example.TripAgora.wishlist.entity.Wishlist, com.example.TripAgora.wishlist.entity.QWishlist>createList("wishlists", com.example.TripAgora.wishlist.entity.Wishlist.class, com.example.TripAgora.wishlist.entity.QWishlist.class, PathInits.DIRECT2);
 
     public QUser(String variable) {
         this(User.class, forVariable(variable), INITS);

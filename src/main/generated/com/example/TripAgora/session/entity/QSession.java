@@ -40,6 +40,8 @@ public class QSession extends EntityPathBase<Session> {
 
     public final ListPath<com.example.TripAgora.participation.entity.Participation, com.example.TripAgora.participation.entity.QParticipation> participants = this.<com.example.TripAgora.participation.entity.Participation, com.example.TripAgora.participation.entity.QParticipation>createList("participants", com.example.TripAgora.participation.entity.Participation.class, com.example.TripAgora.participation.entity.QParticipation.class, PathInits.DIRECT2);
 
+    public final ListPath<com.example.TripAgora.wishlist.entity.Wishlist, com.example.TripAgora.wishlist.entity.QWishlist> reviews = this.<com.example.TripAgora.wishlist.entity.Wishlist, com.example.TripAgora.wishlist.entity.QWishlist>createList("reviews", com.example.TripAgora.wishlist.entity.Wishlist.class, com.example.TripAgora.wishlist.entity.QWishlist.class, PathInits.DIRECT2);
+
     public final com.example.TripAgora.room.entity.QRoom room;
 
     public final ListPath<SessionItinerary, QSessionItinerary> sessionItineraries = this.<SessionItinerary, QSessionItinerary>createList("sessionItineraries", SessionItinerary.class, QSessionItinerary.class, PathInits.DIRECT2);
@@ -49,6 +51,8 @@ public class QSession extends EntityPathBase<Session> {
     public final EnumPath<SessionStatus> status = createEnum("status", SessionStatus.class);
 
     public final com.example.TripAgora.template.entity.QTemplate template;
+
+    public final ListPath<com.example.TripAgora.wishlist.entity.Wishlist, com.example.TripAgora.wishlist.entity.QWishlist> wishlists = this.<com.example.TripAgora.wishlist.entity.Wishlist, com.example.TripAgora.wishlist.entity.QWishlist>createList("wishlists", com.example.TripAgora.wishlist.entity.Wishlist.class, com.example.TripAgora.wishlist.entity.QWishlist.class, PathInits.DIRECT2);
 
     public QSession(String variable) {
         this(Session.class, forVariable(variable), INITS);

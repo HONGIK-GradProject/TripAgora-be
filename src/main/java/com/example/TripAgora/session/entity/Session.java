@@ -7,6 +7,7 @@ import com.example.TripAgora.session.exception.SessionFullException;
 import com.example.TripAgora.template.dto.request.ItineraryItemRequest;
 import com.example.TripAgora.template.entity.Template;
 import com.example.TripAgora.template.entity.TemplateItinerary;
+import com.example.TripAgora.wishlist.entity.Wishlist;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -55,6 +56,12 @@ public class Session extends BaseEntity {
 
     @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private Room room;
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wishlist> wishlists = new ArrayList<>();
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wishlist> reviews = new ArrayList<>();
 
     @Builder
     private Session(Template template, Integer maxParticipants, LocalDate startDate) {

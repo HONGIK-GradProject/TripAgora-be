@@ -6,7 +6,8 @@ import java.util.List;
 
 public record GuideProfileDetailResponse(
         String nickname,
-        String imageUrl,
+        String userImageUrl,
+        String guideImageUrl,
         String bio,
         List<Long> tags,
         List<PortfolioResponse> portfolios,

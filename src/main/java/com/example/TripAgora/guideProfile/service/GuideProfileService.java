@@ -116,6 +116,7 @@ public class GuideProfileService {
 
         return new GuideProfileDetailResponse(
                 user.getNickname(),
+                user.getImageUrl(),
                 guideProfile.getImageUrl(),
                 guideProfile.getBio(),
                 tagIds,

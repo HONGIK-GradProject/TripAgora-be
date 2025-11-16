@@ -131,8 +131,7 @@ public class SessionService {
                 })
                 .toList();
         GuideProfile guideProfile = template.getGuideProfile();
-
-        Long guideProfileId = guideProfile.getUser().getId();
+        Long guideProfileId = guideProfile.getId();
         User guide = guideProfile.getUser();
         Long roomId = (session.getRoom() == null) ? null : session.getRoom().getId();
 

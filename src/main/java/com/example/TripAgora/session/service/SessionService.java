@@ -247,17 +247,28 @@ public class SessionService {
     public void closeRecruitment(long userId, long sessionId) {
         Session session = findSessionAndVerifyOwner(userId, sessionId);
 
+        LocalDate today = LocalDate.now();
+        if (session.getEndDate().isBefore(today)) {
+            throw new SessionAlreadyEndedException();
+        }
+
         if (session.getStatus() != SessionStatus.RECRUITING) {
             throw new SessionNotRecruitingException();
         }
+
+        SessionStatus newStatus;
+        if (session.getStartDate().isAfter(today)) {
+            newStatus = SessionStatus.RECRUITMENT_CLOSED;
+        } else {
+            newStatus = SessionStatus.IN_PROGRESS;
+        }
+        session.updateStatus(newStatus);
 
         Room room = Room.builder()
                 .session(session)
                 .build();
         Room savedRoom = roomRepository.save(room);
         session.assignRoom(room);
-
-        session.updateStatus(SessionStatus.RECRUITMENT_CLOSED);
     }
 
     @Transactional(readOnly = true)

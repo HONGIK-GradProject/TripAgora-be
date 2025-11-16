@@ -19,6 +19,7 @@ public record SessionDetailResponse(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate endDate,
         String status,
+        Long roomId,
         List<SessionParticipantResponse> participants,
         Long guideProfileId,
         boolean isParticipating,

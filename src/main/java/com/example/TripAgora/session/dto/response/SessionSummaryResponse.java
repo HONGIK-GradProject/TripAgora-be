@@ -16,4 +16,5 @@ public record SessionSummaryResponse(
         LocalDate startDate,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate endDate,
-        String status) {}
+        String status,
+        Long roomId) {}

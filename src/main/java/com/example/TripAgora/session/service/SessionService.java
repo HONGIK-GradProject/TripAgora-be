@@ -134,6 +134,7 @@ public class SessionService {
 
         Long guideProfileId = guideProfile.getUser().getId();
         User guide = guideProfile.getUser();
+        Long roomId = (session.getRoom() == null) ? null : session.getRoom().getId();
 
         boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
         boolean isMySession = Objects.equals(guide.getId(), userId);
@@ -151,6 +152,7 @@ public class SessionService {
                 session.getStartDate(),
                 session.getEndDate(),
                 session.getStatus().name(),
+                roomId,
                 participants,
                 guideProfileId,
                 isParticipating,
@@ -286,6 +288,8 @@ public class SessionService {
                             .map(tr -> tr.getRegion().getId())
                             .toList();
 
+                    Long roomId = (session.getRoom() == null) ? null : session.getRoom().getId();
+
                     return new SessionSummaryResponse(
                             session.getId(),
                             template.getTitle(),
@@ -295,7 +299,8 @@ public class SessionService {
                             session.getCurrentParticipants(),
                             session.getStartDate(),
                             session.getEndDate(),
-                            session.getStatus().name()
+                            session.getStatus().name(),
+                            roomId
                     );
                 })
                 .toList();

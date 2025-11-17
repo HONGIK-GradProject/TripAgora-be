@@ -12,7 +12,6 @@ import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.room.exception.RoomNotFoundException;
 import com.example.TripAgora.room.repository.RoomRepository;
 import com.example.TripAgora.user.entity.User;
-import com.example.TripAgora.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -24,7 +23,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ParticipationRepository participationRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -40,17 +38,20 @@ public class ChatService {
                 .room(room)
                 .sender(sender)
                 .content(request.content())
+                .senderRole(participation.getRole())
                 .build();
 
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
 
         return new ChatMessageResponse(
+                savedMessage.getId(),
                 roomId,
                 sender.getId(),
                 sender.getNickname(),
                 sender.getImageUrl(),
                 savedMessage.getContent(),
-                savedMessage.getCreatedAt()
+                savedMessage.getCreatedAt(),
+                savedMessage.getSenderRole()
         );
     }
 
@@ -62,12 +63,14 @@ public class ChatService {
 
         List<ChatMessageResponse> chatMessages = messages.getContent().stream()
                 .map(msg -> new ChatMessageResponse(
+                        msg.getId(),
                         msg.getRoom().getId(),
                         msg.getSender().getId(),
                         msg.getSender().getNickname(),
                         msg.getSender().getImageUrl(),
                         msg.getContent(),
-                        msg.getCreatedAt()
+                        msg.getCreatedAt(),
+                        msg.getSenderRole()
                 ))
                 .toList();
 

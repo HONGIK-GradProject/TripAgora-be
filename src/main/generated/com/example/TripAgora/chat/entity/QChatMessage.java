@@ -38,6 +38,8 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
 
     public final com.example.TripAgora.user.entity.QUser sender;
 
+    public final EnumPath<com.example.TripAgora.user.entity.Role> senderRole = createEnum("senderRole", com.example.TripAgora.user.entity.Role.class);
+
     public QChatMessage(String variable) {
         this(ChatMessage.class, forVariable(variable), INITS);
     }
@@ -59,6 +61,4 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
         this.room = inits.isInitialized("room") ? new com.example.TripAgora.room.entity.QRoom(forProperty("room"), inits.get("room")) : null;
         this.sender = inits.isInitialized("sender") ? new com.example.TripAgora.user.entity.QUser(forProperty("sender"), inits.get("sender")) : null;
     }
-
 }
-

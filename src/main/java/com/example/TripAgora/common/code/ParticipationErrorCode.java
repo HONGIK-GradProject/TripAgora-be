@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum ParticipationErrorCode implements ResponseCode {
     PARTICIPATION_NOT_FOUND(HttpStatus.NOT_FOUND, "여행 참여를 찾을 수 없습니다."),
     ALREADY_PARTICIPATING(HttpStatus.CONFLICT, "이미 해당 세션에 참여 신청을 했습니다."),
-    CANNOT_PARTICIPATE_IN_OWN_SESSION(HttpStatus.BAD_REQUEST, "자신이 개설한 세션에는 참여할 수 없습니다.");
+    CANNOT_PARTICIPATE_IN_OWN_SESSION(HttpStatus.BAD_REQUEST, "자신이 개설한 세션에는 참여할 수 없습니다."),
+    PARTICIPATION_CANCEL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "인원 모집중 혹은 종료된 여행만 참여 취소를 할 수 있습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

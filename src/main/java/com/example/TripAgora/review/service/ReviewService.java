@@ -54,11 +54,11 @@ public class ReviewService {
 
         validateReviewer(author, session);
 
-         if (session.getStatus() != SessionStatus.COMPLETED) {
+        if (session.getStatus() != SessionStatus.COMPLETED) {
              throw new SessionNotCompletedException();
-         }
+        }
 
-        if (reviewRepository.existsByAuthorAndSession(author, session)) {
+        if (reviewRepository.existsByAuthor_IdAndSession_Id(userId, request.sessionId())) {
             throw new AlreadyReviewedException();
         }
 

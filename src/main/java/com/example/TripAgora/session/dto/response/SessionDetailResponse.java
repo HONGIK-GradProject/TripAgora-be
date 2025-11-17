@@ -24,4 +24,5 @@ public record SessionDetailResponse(
         Long guideProfileId,
         boolean isParticipating,
         boolean isMySession,
-        boolean isInWishlist) {}
+        boolean isInWishlist,
+        boolean hasWrittenReview) {}

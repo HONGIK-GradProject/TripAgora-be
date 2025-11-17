@@ -2,6 +2,7 @@ package com.example.TripAgora.chat.entity;
 
 import com.example.TripAgora.common.entity.BaseEntity;
 import com.example.TripAgora.room.entity.Room;
+import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,10 +30,14 @@ public class ChatMessage extends BaseEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
+    @Column(nullable = false)
+    private Role senderRole;
+
     @Builder
-    private ChatMessage(Room room, User sender, String content) {
+    private ChatMessage(Room room, User sender, String content, Role senderRole) {
         this.room = room;
         this.sender = sender;
         this.content = content;
+        this.senderRole = senderRole;
     }
 }

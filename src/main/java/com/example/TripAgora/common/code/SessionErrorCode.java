@@ -13,7 +13,8 @@ public enum SessionErrorCode implements ResponseCode{
     SESSION_DATE_CONFLICT(HttpStatus.BAD_REQUEST, "이미 해당 날짜에 진행 중인 세션이 존재합니다."),
     SESSION_FULL(HttpStatus.CONFLICT, "세션의 참여 인원이 모두 찼습니다."),
     SESSION_NOT_IN_PROGRESS(HttpStatus.BAD_REQUEST, "진행중인 세션에만 가능한 요청입니다."),
-    SESSION_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "여행 종료날짜가 이미 지났습니다. 여행을 새로 개설하세요.");
+    SESSION_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "여행 종료날짜가 이미 지났습니다. 여행을 새로 개설하세요."),
+    SESSION_CANNOT_DELETE(HttpStatus.BAD_REQUEST, "모집중인 여행만 삭제 가능합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

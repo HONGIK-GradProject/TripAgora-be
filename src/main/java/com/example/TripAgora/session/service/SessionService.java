@@ -193,6 +193,11 @@ public class SessionService {
     @Transactional
     public void deleteSession(long userId, long sessionId) {
         Session session = findSessionAndVerifyOwner(userId, sessionId);
+
+        if (session.getStatus() != SessionStatus.RECRUITING) {
+            throw new SessionDeleteNotAllowedException();
+        }
+
         sessionRepository.delete(session);
     }
 

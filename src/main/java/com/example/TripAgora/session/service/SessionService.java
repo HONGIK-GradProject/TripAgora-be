@@ -6,6 +6,7 @@ import com.example.TripAgora.guideProfile.exception.GuideProfileNotFoundExceptio
 import com.example.TripAgora.participation.entity.Participation;
 import com.example.TripAgora.participation.exception.ParticipationNotFoundException;
 import com.example.TripAgora.participation.repository.ParticipationRepository;
+import com.example.TripAgora.review.repository.ReviewRepository;
 import com.example.TripAgora.room.entity.Room;
 import com.example.TripAgora.room.repository.RoomRepository;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
@@ -50,6 +51,7 @@ public class SessionService {
     private final ParticipationRepository participationRepository;
     private final RoomRepository roomRepository;
     private final WishlistRepository wishlistRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public SessionCreateResponse createSession(long userId, SessionCreateRequest request) {
@@ -138,6 +140,7 @@ public class SessionService {
         boolean isParticipating = participationRepository.existsByUser_IdAndSession_Id(userId, sessionId);
         boolean isMySession = Objects.equals(guide.getId(), userId);
         boolean isInWishlist = wishlistRepository.existsByUser_IdAndSession_Id(userId, sessionId);
+        boolean hasWrittenReview = reviewRepository.existsByAuthor_IdAndSession_Id(userId, sessionId);
 
         return new SessionDetailResponse(
                 template.getId(),
@@ -156,7 +159,8 @@ public class SessionService {
                 guideProfileId,
                 isParticipating,
                 isMySession,
-                isInWishlist
+                isInWishlist,
+                hasWrittenReview
         );
     }
 
@@ -231,6 +235,51 @@ public class SessionService {
     }
 
     @Transactional(readOnly = true)
+    public CompletedSessionListResponse getCompletedSessions(long userId, Pageable pageable) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Slice<Participation> participationSlice = participationRepository.findByUserAndRoleAndSession_Status(
+                user,
+                Role.TRAVELER,
+                SessionStatus.COMPLETED,
+                pageable
+        );
+
+        List<CompletedSessionResponse> completedSessions = participationSlice.getContent().stream()
+                .map(participation -> {
+                    Session session = participation.getSession();
+                    Template template = session.getTemplate();
+
+                    String imageUrl = template.getTemplateImages().isEmpty() ?
+                            null : template.getTemplateImages().get(0).getImageUrl();
+
+                    List<Long> regions = template.getTemplateRegions().stream()
+                            .map(tr -> tr.getRegion().getId())
+                            .toList();
+
+                    Long roomId = (session.getRoom() == null) ? null : session.getRoom().getId();
+                    boolean hasWrittenReview = reviewRepository.existsByAuthor_IdAndSession_Id(userId, session.getId());
+
+                    return new CompletedSessionResponse(
+                            session.getId(),
+                            template.getTitle(),
+                            imageUrl,
+                            regions,
+                            session.getMaxParticipants(),
+                            session.getCurrentParticipants(),
+                            session.getStartDate(),
+                            session.getEndDate(),
+                            session.getStatus().name(),
+                            roomId,
+                            hasWrittenReview
+                    );
+                })
+                .toList();
+
+        return new CompletedSessionListResponse(completedSessions, participationSlice.hasNext());
+    }
+
+    @Transactional(readOnly = true)
     public ItinerariesResponse getItineraries(long sessionId) {
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
@@ -283,6 +332,34 @@ public class SessionService {
         return getSessionListResponse(sessionSlice);
     }
 
+    @Transactional
+    public void updateItineraries(Long userId, Long sessionId, ItineraryUpdateRequest request) {
+        Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
+        Participation participation = participationRepository.findByUser_IdAndSession_Id(userId, sessionId)
+                .orElseThrow(ParticipationNotFoundException::new);
+
+        if(participation.getRole() != Role.GUIDE) {
+            throw new AccessDeniedException();
+        }
+
+        if (session.getStatus() != SessionStatus.IN_PROGRESS) {
+            throw new SessionNotInProgressException();
+        }
+
+        Map<Integer, List<ItineraryItemRequest>> itinerariesByDay = request.itineraries().stream()
+                .collect(Collectors.groupingBy(ItineraryItemRequest::day));
+
+        int maxDay = itinerariesByDay.keySet().stream().max(Integer::compareTo).orElse(0);
+        for (int i = 1; i <= maxDay; i++) {
+            if (!itinerariesByDay.containsKey(i)) {
+                throw new ItineraryDaySequenceInvalidException();
+            }
+        }
+
+        session.clearItineraries();
+        request.itineraries().forEach(session::addItinerary);
+    }
+
     private Session findSessionAndVerifyOwner(long userId, long sessionId) {
         Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
 
@@ -321,33 +398,5 @@ public class SessionService {
                 .toList();
 
         return new SessionListResponse(summaries, sessionSlice.hasNext());
-    }
-
-    @Transactional
-    public void updateItineraries(Long userId, Long sessionId, ItineraryUpdateRequest request) {
-        Session session = sessionRepository.findById(sessionId).orElseThrow(SessionNotFoundException::new);
-        Participation participation = participationRepository.findByUser_IdAndSession_Id(userId, sessionId)
-                .orElseThrow(ParticipationNotFoundException::new);
-
-        if(participation.getRole() != Role.GUIDE) {
-            throw new AccessDeniedException();
-        }
-
-        if (session.getStatus() != SessionStatus.IN_PROGRESS) {
-            throw new SessionNotInProgressException();
-        }
-
-        Map<Integer, List<ItineraryItemRequest>> itinerariesByDay = request.itineraries().stream()
-                .collect(Collectors.groupingBy(ItineraryItemRequest::day));
-
-        int maxDay = itinerariesByDay.keySet().stream().max(Integer::compareTo).orElse(0);
-        for (int i = 1; i <= maxDay; i++) {
-            if (!itinerariesByDay.containsKey(i)) {
-                throw new ItineraryDaySequenceInvalidException();
-            }
-        }
-
-        session.clearItineraries();
-        request.itineraries().forEach(session::addItinerary);
     }
 }

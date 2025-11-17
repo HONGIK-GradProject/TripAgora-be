@@ -5,13 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-public record SessionDetailResponse(
-        Long templateId,
+public record CompletedSessionResponse(
+        Long sessionId,
         String title,
-        String content,
+        String firstImageUrl,
         List<Long> regionIds,
-        List<Long> tagIds,
-        List<String> imageUrls,
         Integer maxParticipants,
         Integer currentParticipants,
         @JsonFormat(pattern = "yyyy-MM-dd")
@@ -20,9 +18,4 @@ public record SessionDetailResponse(
         LocalDate endDate,
         String status,
         Long roomId,
-        List<SessionParticipantResponse> participants,
-        Long guideProfileId,
-        boolean isParticipating,
-        boolean isMySession,
-        boolean isInWishlist,
         boolean hasWrittenReview) {}

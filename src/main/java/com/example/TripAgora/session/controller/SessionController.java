@@ -5,6 +5,7 @@ import com.example.TripAgora.common.response.ApiResponse;
 import com.example.TripAgora.session.dto.request.SessionCreateRequest;
 import com.example.TripAgora.session.dto.request.SessionSearchRequest;
 import com.example.TripAgora.session.dto.request.SessionUpdateRequest;
+import com.example.TripAgora.session.dto.response.CompletedSessionListResponse;
 import com.example.TripAgora.session.dto.response.SessionCreateResponse;
 import com.example.TripAgora.session.dto.response.SessionDetailResponse;
 import com.example.TripAgora.session.dto.response.SessionListResponse;
@@ -84,6 +85,14 @@ public class SessionController {
                                                                      @RequestParam(required = false) List<SessionStatus> statuses,
                                                                      @PageableDefault(size = 10) Pageable pageable) {
         SessionListResponse response = sessionService.getParticipatingSessions(userId, statuses, pageable);
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
+    @GetMapping("/completed")
+    public ApiResponse<CompletedSessionListResponse> getCompletedSessions(@AuthenticationPrincipal final long userId,
+                                                                          @PageableDefault(size = 10) Pageable pageable) {
+
+        CompletedSessionListResponse response = sessionService.getCompletedSessions(userId, pageable);
         return ApiResponse.success(SuccessCode.OK, response);
     }
 

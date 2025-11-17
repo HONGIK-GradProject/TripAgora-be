@@ -4,12 +4,12 @@ import com.example.TripAgora.participation.dto.response.ParticipationResponse;
 import com.example.TripAgora.participation.entity.Participation;
 import com.example.TripAgora.participation.exception.AlreadyParticipatingException;
 import com.example.TripAgora.participation.exception.CannotParticipateInOwnSessionException;
+import com.example.TripAgora.participation.exception.ParticipationCancelNotAllowedException;
 import com.example.TripAgora.participation.exception.ParticipationNotFoundException;
 import com.example.TripAgora.participation.repository.ParticipationRepository;
 import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionStatus;
 import com.example.TripAgora.session.exception.SessionNotFoundException;
-import com.example.TripAgora.session.exception.SessionNotRecruitingException;
 import com.example.TripAgora.session.repository.SessionRepository;
 import com.example.TripAgora.user.entity.Role;
 import com.example.TripAgora.user.entity.User;
@@ -73,8 +73,9 @@ public class ParticipationService {
     }
 
     private void validateSessionStatus(Session session) {
-        if (session.getStatus() != SessionStatus.RECRUITING) {
-            throw new SessionNotRecruitingException();
+        if (session.getStatus() != SessionStatus.RECRUITING &&
+            session.getStatus() != SessionStatus.COMPLETED) {
+            throw new ParticipationCancelNotAllowedException();
         }
     }
 }

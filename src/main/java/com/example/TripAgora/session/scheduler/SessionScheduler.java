@@ -19,7 +19,7 @@ public class SessionScheduler {
     private final SessionRepository sessionRepository;
 
     @Transactional
-    @Scheduled(cron = "0 40 17 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 1 0 * * *", zone = "Asia/Seoul")
     public void startSessions() {
         LocalDate today = LocalDate.now();
         log.info("[SessionScheduler] 'IN_PROGRESS' 상태 변경 작업 시작 (대상 날짜: {})", today);
@@ -37,7 +37,7 @@ public class SessionScheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "0 41 17 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 3 0 * * *", zone = "Asia/Seoul")
     public void completeSessions() {
         LocalDate today = LocalDate.now();
         log.info("[SessionScheduler] 'COMPLETED' 상태 변경 작업 시작 (대상 날짜: {} 이전)", today);

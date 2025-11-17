@@ -18,6 +18,12 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
     Optional<Participation> findByUser_IdAndSession_Id(long userId, long sessionId);
     boolean existsByUser_IdAndSession_Id(long userId, long sessionId);
 
+    Slice<Participation> findByUserAndRoleAndSession_Status(
+            User user,
+            Role role,
+            SessionStatus sessionStatus,
+            Pageable pageable);
+
     Slice<Participation> findByUserAndRoleAndSession_StatusIn(
             User user,
             Role role,

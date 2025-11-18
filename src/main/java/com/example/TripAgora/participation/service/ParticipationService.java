@@ -2,10 +2,7 @@ package com.example.TripAgora.participation.service;
 
 import com.example.TripAgora.participation.dto.response.ParticipationResponse;
 import com.example.TripAgora.participation.entity.Participation;
-import com.example.TripAgora.participation.exception.AlreadyParticipatingException;
-import com.example.TripAgora.participation.exception.CannotParticipateInOwnSessionException;
-import com.example.TripAgora.participation.exception.ParticipationCancelNotAllowedException;
-import com.example.TripAgora.participation.exception.ParticipationNotFoundException;
+import com.example.TripAgora.participation.exception.*;
 import com.example.TripAgora.participation.repository.ParticipationRepository;
 import com.example.TripAgora.session.entity.Session;
 import com.example.TripAgora.session.entity.SessionStatus;
@@ -40,6 +37,16 @@ public class ParticipationService {
         participationRepository.findByUser_IdAndSession_Id(userId, sessionId).ifPresent(p -> {
             throw new AlreadyParticipatingException();
         });
+
+        boolean hasConflict = participationRepository.existsConflictingParticipation(
+                userId,
+                session.getStartDate(),
+                session.getEndDate()
+        );
+
+        if (hasConflict) {
+            throw new ConflictingParticipationException();
+        }
 
         session.increaseParticipant();
 

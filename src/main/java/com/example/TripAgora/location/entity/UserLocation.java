@@ -1,25 +1,46 @@
 package com.example.TripAgora.location.entity;
 
-import jakarta.persistence.Id;
+import com.example.TripAgora.common.entity.BaseEntity;
+import com.example.TripAgora.room.entity.Room;
+import com.example.TripAgora.user.entity.User;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-public class UserLocation {
-
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserLocation extends BaseEntity {
     @Id
-    private Long userId; // PK: 사용자 ID (한 명당 한 줄만 존재)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private Long chatRoomId; // 현재 참여 중인 채팅방
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
+
+    @Column(nullable = false)
     private Double latitude;
+
+    @Column(nullable = false)
     private Double longitude;
 
-    private LocalDateTime lastUpdatedAt; // 마지막 갱신 시간
+    @Builder
+    private UserLocation(User user, Room room, Double latitude, Double longitude) {
+        this.user = user;
+        this.room = room;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
-    // 생성자 및 업데이트 메서드
-    public void updateLocation(Double lat, Double lng) {
-        this.latitude = lat;
-        this.longitude = lng;
-        this.lastUpdatedAt = LocalDateTime.now();
+    public void updateLocation(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

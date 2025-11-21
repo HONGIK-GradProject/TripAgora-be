@@ -1,9 +1,9 @@
-package com.example.TripAgora.chat.interceptor;
+package com.example.TripAgora.stomp.interceptor;
 
 import com.example.TripAgora.auth.exception.AccessTokenInvalidException;
 import com.example.TripAgora.auth.exception.UnAuthorizedAccessException;
 import com.example.TripAgora.auth.util.JWTUtil;
-import com.example.TripAgora.chat.exception.InvalidDestinationException;
+import com.example.TripAgora.stomp.exception.InvalidDestinationException;
 import com.example.TripAgora.participation.entity.Participation;
 import com.example.TripAgora.participation.exception.ParticipationNotFoundException;
 import com.example.TripAgora.participation.repository.ParticipationRepository;

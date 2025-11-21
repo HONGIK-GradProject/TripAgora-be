@@ -1,6 +1,6 @@
-package com.example.TripAgora.chat.config;
+package com.example.TripAgora.stomp.config;
 
-import com.example.TripAgora.chat.interceptor.StompAuthInterceptor;
+import com.example.TripAgora.stomp.interceptor.StompAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum ChatErrorCode implements ResponseCode{
+public enum StompErrorCode implements ResponseCode{
     INVALID_DESTINATION(HttpStatus.BAD_REQUEST, "유효하지 않은 STOMP destination 입니다.");
 
     private final HttpStatus httpStatus;

@@ -32,5 +32,12 @@ public class StompController {
         messagingTemplate.convertAndSend("/topic/room/" + roomId + "/chat", response);
     }
 
-
+    @MessageMapping("/room/{roomId}/location")
+    public void sendLocation(@DestinationVariable(value = "roomId") Long roomId,
+                             LocationUpdateRequest request,
+                             Principal principal) {
+        Long userId = Long.valueOf(principal.getName());
+        LocationResponse response = locationService.updateLocation(userId, roomId, request);
+        messagingTemplate.convertAndSend("/topic/room/" + roomId + "/location", response);
+    }
 }
